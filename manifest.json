@@ -1,0 +1,13 @@
+{
+  "name": "我的釜山旅遊指南",
+  "short_name": "釜山2026",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "485x485",
+      "type": "image/png"
+    }
+  ]
+}
