@@ -7,134 +7,423 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>釜山 5天4夜 自由行攻略</title>
+  <title>釜山 5天4夜 深度攻略</title>
 
-  <!-- 1. 引入 Tailwind CSS (負責排版) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- 2. 引入 FontAwesome (最穩定的圖示庫，絕不白畫面) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- 3. 引入 React 核心函式庫 (傳統全域載入法，支援所有舊版 Safari) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
-  <!-- 引入思源宋體與自訂 CSS -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
-    
     .font-serif-tc { font-family: 'Noto Serif TC', "PMingLiU", "Songti TC", serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5F1FB; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1e8ff; border-radius: 10px; }
     * { -webkit-tap-highlight-color: transparent; }
     body { background-color: #FAFAFA; overscroll-behavior-y: none; }
   </style>
 </head>
 <body>
-  <!-- App 渲染容器 -->
   <div id="root"></div>
 
-  <!-- React 程式碼 -->
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 📝 Data: 行前準備資料 ---
     const prepData = {
       checklist: [
-        { title: "護照與簽證", desc: "確認護照效期6個月以上。台灣護照入境免簽，但請預先確認 K-ETA 規定並填寫入境卡。" },
-        { title: "預約熱門票券", desc: "天空膠囊列車(傍晚時段極易向隅)、廣安里遊艇、釜山滑車，強烈建議出發前一個月上網預訂。" }
+        { title: "護照與簽證 (K-ETA)", desc: "確認護照效期6個月以上。持台灣護照入境免簽，但請務必確認最新 K-ETA 規定並提前填寫入境卡或 Q-Code 加速通關。" },
+        { title: "預約熱門票券 (極重要)", desc: "「天空膠囊列車」、「廣安里星空遊艇」與「釜山滑車」，強烈建議出發前一個月上網預訂。特別是膠囊列車的夕陽時段，現場絕對買不到票。" }
       ],
       apps: [
-        { name: "Naver Map", desc: "韓國導航必備，Google Maps 在韓國無法步行導航。" },
-        { name: "Papago", desc: "韓國最強翻譯軟體，支援語音與圖片，比 Google 翻譯精準。" },
-        { name: "Kakao T", desc: "叫計程車必備，可綁定信用卡或選現金付款。" },
-        { name: "Visit Busan Pass", desc: "若有購買通行證，可綁定 App 查看剩餘時間與景點。" }
+        { name: "Naver Map", desc: "韓國導航唯一神器！Google Maps 在韓國受限法規「無法使用步行導航」，請務必熟悉 Naver Map 介面。" },
+        { name: "Papago", desc: "韓國最強翻譯軟體。語音辨識極其精準，點餐時直接用「圖片翻譯」掃描菜單，準確率海放 Google 翻譯。" },
+        { name: "Kakao T", desc: "韓國版 Uber。綁定信用卡或選擇「現金付款(Meet Taxi/Pay to Driver)」皆可，避免路邊攔車被繞路。" },
+        { name: "Visit Busan Pass", desc: "若有購買釜山通行證，請下載官方 App 綁定，方便查看可兌換景點與 24H/48H 剩餘時間。" }
       ],
       weather: [
-        { title: "天氣與穿搭", desc: "5月約 15°C - 22°C。初夏白天溫暖，但早晚海風大，建議「洋蔥式穿搭」（薄長袖＋防風外套）。" },
-        { title: "必備物品", desc: "韓國為 220V 雙圓孔插座，務必帶轉接頭。釜山坡道樓梯多，強烈建議穿「極度好走的運動鞋」。" }
+        { title: "5月氣候與洋蔥式穿搭", desc: "5月釜山正值初夏，氣溫約 15°C-22°C。白天陽光下溫暖，但「海風極大且早晚偏涼」。強烈建議帶一件防風輕薄外套，內搭短袖或薄長袖。" },
+        { title: "硬體與體力裝備", desc: "韓國為 220V 雙圓孔插座，務必帶轉接頭。釜山地形極多坡道與階梯（尤其是甘川洞），請絕對要穿「最舒適耐走的運動鞋」。" }
       ],
       payment: [
-        { title: "網路建議", desc: "推薦使用 eSIM，下機即連網免換實體卡，無弄丟台灣 SIM 卡風險。" },
-        { title: "交通與支付", desc: "推薦辦理 WOWPASS（結合換匯與 T-Money 交通卡）。" },
-        { title: "實體現金", desc: "傳統市場/路邊攤只收現金。在台先換2-3千台幣等值韓元，其餘帶美金/台幣去西面當地換匯所匯率最好。" }
-      ],
-      accommodation: {
-        recommended: "西面站 (Seomyeon)",
-        reason: "1號與2號線交匯點，去哪都不用換車。商圈極繁華，滿足吃宵夜與最後一刻去機場的便利性（直達輕軌不塞車）。",
-        comparisons: [
-          { area: "南浦", pro: "傳統市場控最愛", con: "離海雲台/機張太遠" },
-          { area: "海雲台", pro: "絕美海景渡假感", con: "離機場極遠，往市區耗時" }
-        ]
-      }
+        { title: "網路建議 (eSIM)", desc: "強烈推薦使用 eSIM，下機掃碼即連網，免換實體卡，完全沒有弄丟台灣 SIM 卡的風險。" },
+        { title: "交通支付 (WOWPASS)", desc: "推薦辦理 WOWPASS 機台卡片，結合了「外幣換匯儲值」與「T-Money 交通卡」功能，在地鐵站幾乎都能機台加值。" },
+        { title: "實體現金準備", desc: "傳統市場（如富平夜市、札嘎其）、路邊攤布帳馬車「只收現金」。建議在台灣先換 2,000 台幣等值韓元應急，其餘帶新台幣去「西面站」的換匯所（如老奶奶換錢所）換匯，匯率最佳。" }
+      ]
     };
 
-    // --- 📝 Data: 釜山行程資料庫 (全面修正 mapQuery 確保 100% 導航準確度) ---
+    // --- 擴充版行程庫 ---
     const itineraryData = [
       {
         day: 1, dateLabel: "5/6(三)", title: "抵達日、輕鬆適應日", budget: "約 47,500 KRW",
-        memo: ["布帳馬車點餐若沒先確認價格（部分無標價），結帳可能會覺得偏貴。","地下街購物有些不能試穿且只收現金，請先確認。","若決定吃「味讚王」，建議避開 19:00-20:00 聚餐高峰，18:00 左右去吃。","【雨天備案】直接轉入「西面地下商街」逛街，或躲進田浦咖啡街。"],
+        memo: [
+          "西面換錢所的匯率通常優於機場，機場只換交通費即可。",
+          "布帳馬車點餐前，務必用 Papago 翻譯詢問價格，無標價的攤位容易有爭議。",
+          "若決定吃「味讚王」，晚餐尖峰 (18:30-20:00) 需等候，建議提早或延後。"
+        ],
         events: [
-          { time: "15:45 - 16:45", type: "single", title: "金海機場抵達與出關", koreanName: "김해국제공항", mapQuery: "김해국제공항", address: "釜山廣域市江西區機場進出路108", tags: ["交通", "入境"], description: "入境、拿行李。辦理 WOWPASS 儲值基本交通費。", story: "金海國際機場是韓國南部最大的機場。出關後，1樓大廳有便利商店可購買交通卡，也有 WOWPASS 機台可直接用台幣兌換韓元並儲值交通卡功能。", tips: "搭乘輕軌至沙上站轉地鐵2號線，最穩定無塞車風險。", icon: "fa-train", transit: { method: "輕軌轉地鐵", duration: "約 40 分鐘", desc: "至沙上站轉乘2號線", icon: "fa-train" } },
-          { time: "16:45 - 17:45", type: "single", title: "西面飯店 Check-in", koreanName: "서면역", mapQuery: "서면역", address: "釜山廣域市釜山鎮區", tags: ["住宿", "市中心"], description: "前往飯店 Check-in 並稍微盥洗休息。", story: "西面站相當於首爾的明洞或台北的台北車站，1號線與2號線交會處，是美食與購物的超級一級戰區。", tips: "您的回程班機較早，住這裡最後一天不用轉車即可直達機場輕軌。", icon: "fa-location-dot", transit: { method: "步行", duration: "10 分鐘", desc: "周邊探索", icon: "fa-shoe-prints" } },
-          { time: "18:00 - 19:00", type: "single", title: "西面商圈與換匯初探", koreanName: "서면지하상가", mapQuery: "서면지하상가", address: "西面站地下/周邊", tags: ["購物", "換匯"], description: "換錢所換匯，順便逛西面地下街。", story: "西面地下街是釜山流行服飾集散地，換錢所通常隱身在巷弄中，匯率會比機場好上許多。", tips: "剛抵達不宜安排重度耗體力景點，先搞定盤纏，並在住宿點周邊熟悉環境。", icon: "fa-bag-shopping", transit: { method: "步行", duration: "5 分鐘", desc: "前往餐廳", icon: "fa-shoe-prints" } },
-          { time: "19:00 - 20:30", type: "choices", title: "晚餐：釜山在地美食洗禮", description: "今晚剛抵達，推薦用最道地且具衝擊力的韓式料理開局。", options: [ { title: "味讚王鹽烤肉", koreanName: "맛찬들왕소금구이 서면점", mapQuery: "맛찬들왕소금구이 서면점", address: "釜山廣域市釜山鎮區中央大路691街32", tags: ["烤五花肉", "專人代烤"], description: "3.5公分厚切豬五花，知名YouTuber極力推崇。", story: "排隊名店。特色是專人幫烤，且會加入蝦皮一起烤，搭配小菜包肉吃，口感層次極佳。", tips: "西面站 7 號出口步行約 5-7 分鐘。建議 2 人以上，通常有低消肉份數限制。" }, { title: "松亭3代豬肉湯飯", koreanName: "송정3대국밥", mapQuery: "송정3대국밥", address: "釜山廣域市釜山鎮區西面路68街33", tags: ["鄉土料理", "24小時"], description: "釜山特色鄉土料理，湯頭溫潤不腥。", story: "位於西面著名的「豬肉湯飯一條街」。湯頭溫潤，肉片多，可自行加入韭菜與蝦醬調味，極具釜山靈魂。", tips: "翻桌率極快，通常 10-15 分鐘內可入座。1人友善。" }, { title: "雪夜覓 水芹松阪豬", koreanName: "설야멱", mapQuery: "설야멱 서면본점", address: "西面站周邊商圈", tags: ["藍絲帶認證", "創意烤肉"], description: "將松阪豬中心夾滿水芹菜碳烤。", story: "獲得藍絲帶認證的美味！碳烤後帶有獨特香氣與脆Q口感，非常具特色且解膩。", tips: "20-30 分鐘排隊，建議2人以上同行。" } ], icon: "fa-utensils", transit: { method: "步行", duration: "散步", desc: "助消化", icon: "fa-shoe-prints" } },
-          { time: "20:30 - 23:30", type: "single", title: "西面布帳馬車宵夜", koreanName: "서면 포장마차거리", mapQuery: "서면 포장마차거리", address: "西面樂天百貨總店後方及周邊巷弄", tags: ["夜生活", "街邊帳篷"], description: "拍貼機散步，體驗街邊帳篷喝燒酒氛圍。", story: "一字排開的橘紅色/藍色帳篷，阿珠媽現場料理的煙火氣，極具釜山庶民文化特色。", tips: "無中文菜單且只收現金，點餐前請用 Papago 確認價格。若太累可刪減此行程回飯店。", icon: "fa-mug-hot" }
+          { time: "15:45 - 16:45", type: "single", title: "金海機場抵達與出關", koreanName: "김해국제공항", mapQuery: "김해국제공항", address: "釜山廣域市江西區機場進出路108", tags: ["交通", "入境"], 
+            description: "抵達韓國南部最大機場，辦理入境與交通卡。", 
+            stayTime: "約 1 小時 (含通關)", queueTime: "出關約需 30-45 分鐘",
+            highlights: "機場 1 樓大廳便利商店購買 T-Money，或使用 WOWPASS 機台。",
+            story: "金海國際機場規模適中，動線單純。出關後第一件事是搞定網路與交通卡。若有買釜山通行證實體卡，也可在此處的專屬櫃檯兌換。", 
+            tips: "【交通攻略】強烈建議不要搭乘機場巴士（易塞車）。請走出航廈，搭乘「釜山金海輕軌 (BGL)」至『沙上站』，再轉乘地鐵 2 號線直達西面，時間最準確。",
+            icon: "fa-plane-arrival", transit: { method: "輕軌轉地鐵", duration: "約 40 分鐘", desc: "至沙上站轉乘2號線", icon: "fa-train" } 
+          },
+          { time: "16:45 - 17:45", type: "single", title: "西面站 飯店 Check-in", koreanName: "서면역", mapQuery: "서면역", address: "釜山廣域市釜山鎮區西面", tags: ["住宿", "市中心"], 
+            description: "前往飯店安置行李，稍作休息。", 
+            stayTime: "45 分鐘", queueTime: "無",
+            highlights: "西面站是釜山地鐵 1 號線與 2 號線的黃金交會點。",
+            story: "西面相當於台北的北車或首爾的明洞，是釜山最繁華的商業與交通樞紐。選擇住在這裡，去海雲台或南浦洞都不用換車，且周邊擁有龐大的地下街、豬肉湯飯街與烤肉街。", 
+            tips: "【優勢】因為您的回程班機是下午 13:40，住西面在最後一天早晨前往機場時，拖著行李的動線是最輕鬆的。",
+            icon: "fa-bed", transit: { method: "步行", duration: "10 分鐘", desc: "前往商圈", icon: "fa-shoe-prints" } 
+          },
+          { time: "18:00 - 19:00", type: "single", title: "西面商圈換匯與初探", koreanName: "서면지하상가", mapQuery: "서면지하상가", address: "西面站周邊與地下商街", tags: ["換錢", "購物"], 
+            description: "前往換錢所備妥現金，隨後逛西面地下街。", 
+            stayTime: "1 小時", queueTime: "換匯約 5 分鐘",
+            highlights: "老奶奶換錢所、首爾換錢所 (首爾換錢所匯率通常最優)；西面地下街平價服飾。",
+            story: "初來乍到，先不安排耗體力的景點。西面商圈的巷弄內藏有幾家匯率極佳的民間換錢所。換完錢後，可以鑽入釜山最大的「西面地下街」感受韓國年輕人的流行穿搭。", 
+            tips: "【雨天備案】若外面下雨，西面地下街與相連的樂天百貨足以讓您逛上整個半天。地下街買衣服多半只能用現金且無法試穿，請留意。",
+            icon: "fa-won-sign", transit: { method: "步行", duration: "5 分鐘", desc: "準備吃晚餐", icon: "fa-shoe-prints" } 
+          },
+          { time: "19:00 - 20:30", type: "choices", title: "晚餐：西面美食洗禮", description: "用最道地的韓式料理作為釜山行的開局。", options: [ 
+            { title: "味讚王鹽烤肉", koreanName: "맛찬들왕소금구이 서면점", mapQuery: "맛찬들왕소금구이 서면점", address: "釜山鎮區中央大路691街32", tags: ["必吃烤肉", "專人代烤"], 
+              description: "3.5公分厚切豬五花，YouTuber極力推崇的排隊名店。", 
+              stayTime: "1.5 小時", queueTime: "尖峰時段 30-45 分鐘",
+              highlights: "必點：厚切豬五花 (숙성생삼겹살)、石鍋大醬湯。烤肉時加入的「蝦皮」是靈魂。",
+              story: "這家店是許多台灣旅客心中的釜山烤肉 No.1！特色在於肉品經過熟成，且有專業店員全程代烤，烤得外酥內嫩。最特別的是他們會把小蝦皮放在鐵板上爆香，搭配醃蘿蔔絲與烤肉包在一起吃，層次感極其豐富。", 
+              tips: "【注意】韓國烤肉通常有「基本起跳份數」限制（通常是 3 份肉起跳，約 39,000 韓元），兩人吃剛好。" 
+            }, 
+            { title: "松亭3代豬肉湯飯", koreanName: "송정3대국밥", mapQuery: "송정3대국밥", address: "釜山鎮區西面路68街33", tags: ["鄉土料理", "24小時"], 
+              description: "釜山特有的靈魂美食，湯頭溫潤不腥。", 
+              stayTime: "45 分鐘", queueTime: "翻桌快，約 5-10 分鐘",
+              highlights: "必點：豬肉湯飯 (돼지국밥)、血腸 (순대)。",
+              story: "位於著名的「西面豬肉湯飯一條街」。豬肉湯飯是韓戰時期流傳下來的庶民美食，將豬骨熬至乳白色。吃的時候要自己加入韭菜、蝦醬和辣醬調味，麵線也可免費續加，極度暖胃。", 
+              tips: "【單人友善】這是一道非常適合一個人享用的美食，24小時營業，隨時都能來吃。" 
+            }, 
+            { title: "雪夜覓 水芹松阪豬", koreanName: "설야멱", mapQuery: "설야멱 서면본점", address: "西面站周邊商圈", tags: ["藍絲帶", "創意烤肉"], 
+              description: "獲得韓國美食評鑑「藍絲帶」認證的精緻烤肉。", 
+              stayTime: "1.5 小時", queueTime: "20-30 分鐘",
+              highlights: "特色吃法：將大量水芹菜放在烤盤上，與充滿油脂的松阪豬一起烤。",
+              story: "若不想吃傳統的五花肉，這家主打精緻路線。水芹菜特殊的香氣能完美中和豬肉的油膩感，加上店內提供多種特製沾醬（如明太子醬、羅勒醬），是韓國近期非常流行的吃法。", 
+              tips: "店內裝潢較具質感，排風系統佳，吃完身上烤肉味較少。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "步行", duration: "散步", desc: "前往宵夜街", icon: "fa-shoe-prints" } },
+          { time: "20:30 - 23:00", type: "single", title: "西面布帳馬車 宵夜體驗", koreanName: "서면 포장마차거리", mapQuery: "서면 포장마차거리", address: "西面樂天百貨總店後方巷弄", tags: ["夜生活", "街邊帳篷"], 
+            description: "化身韓劇主角，在街邊帳篷喝燒酒吃海鮮。", 
+            stayTime: "1.5 小時", queueTime: "視攤位客滿度",
+            highlights: "必點：辣炒年糕、魚板湯、雞蛋卷、各式烤海鮮與燒酒。",
+            story: "晚上 8 點過後，西面樂天百貨後方會搭起一整排橘紅色與藍色的帳篷。阿珠媽在中間料理，客人圍坐一圈，這是最能感受到韓國庶民煙火氣與夜生活文化的地方。", 
+            tips: "【重要避坑】布帳馬車多半沒有中文菜單，且「只收現金」。點餐前務必用手機翻譯確認各項價格，以免結帳時覺得被當盤子。若累了可直接回飯店休息。",
+            icon: "fa-tent" 
+          }
         ]
       },
       {
         day: 2, dateLabel: "5/7(四)", title: "核心觀光日、海景日", budget: "約 114,500 KRW",
-        memo: ["天空膠囊列車現場幾乎買不到票，務必提前上網預訂！","早上的冬柏島與海雲台越早去越能避開旅行團。","【體力調節】若不耐走，刪掉冬柏島散步，直接到海雲台沙灘。","【雨天備案】大幅拉長「Spa Land」與「新世界百貨」停留時間。"],
+        memo: [
+          "早上的冬柏島與海雲台越早去越能避開旅行團。",
+          "天空膠囊列車務必提早 15 分鐘抵達尾浦站排隊上車。",
+          "【體力調節】若長輩同行不耐走，可刪掉冬柏島散步，直接搭車到海雲台沙灘。"
+        ],
         events: [
-          { time: "09:00 - 10:00", type: "single", title: "冬柏島海岸散步路", koreanName: "동백섬", mapQuery: "해운대 동백섬", address: "釜山廣域市海雲台區冬柏路", tags: ["絕美海景", "散步"], description: "沿著海岸木棧道一路走到海雲台沙灘。", story: "平緩易走。從這裡走向海雲台沙灘的視角是釜山最經典的明信片取景地。", tips: "地鐵冬柏站下車，上午光線順光海水最藍。若遇雨改去 SEA LIFE 水族館。", icon: "fa-compass", transit: { method: "步行", duration: "10 分鐘", desc: "前往餐廳", icon: "fa-shoe-prints" } },
-          { time: "11:30 - 13:00", type: "choices", title: "午餐：海雲台名店", description: "精選海雲台周邊最具代表性的美食。", options: [ { title: "錦繡河豚 (海雲台本店)", koreanName: "금수복국 해운대본점", mapQuery: "금수복국 해운대본점", address: "釜山廣域市海雲台區中洞1路43街23", tags: ["米其林", "河豚料理"], description: "釜山最具代表性的老字號，河豚湯鮮甜無比。", story: "24小時營業，獲米其林必比登推介。河豚肉緊實Q彈，清湯加了水芹與豆芽。", tips: "海雲台沙灘步行 5-8 分鐘。必點銀漢河豚清湯。" }, { title: "密陽血腸豬肉湯飯", koreanName: "밀양순대돼지국밥 해운대점", mapQuery: "밀양순대돼지국밥 해운대점", address: "釜山廣域市海雲台區龜南路28", tags: ["鄉土料理", "無腥味"], description: "湯頭濃郁呈現乳白色，適合初次嘗試的旅客。", story: "位於海雲台主街上，交通極度便利。若不敢吃河豚，這是最好的替代選項。", tips: "店面大翻桌快，通常 10 分鐘內入座。" }, { title: "極東豬肉湯飯 (原海味刀削麵備案)", koreanName: "극동돼지국밥", mapQuery: "극동돼지국밥 해운대", address: "海雲台周邊", tags: ["排隊名店", "清爽湯頭"], description: "海雲台另一家極具盛名的排隊名店。", story: "湯頭清澈純粹，使用高品質的豬肉，吃起來毫無負擔感。", tips: "用餐環境較佳，非常受年輕人歡迎。" } ], icon: "fa-utensils", transit: { method: "步行", duration: "15-20 分鐘", desc: "朝東邊尾浦站前進", icon: "fa-shoe-prints" } },
-          { time: "14:00 - 14:30", type: "single", title: "天空膠囊列車", koreanName: "해운대블루라인파크 미포정거장", mapQuery: "해운대블루라인파크 미포정거장", address: "尾浦站 (海雲台區迎月路62號街13)", tags: ["網美打卡", "必須預約"], description: "尾浦出發 ➜ 青沙浦下車，飽覽釜山東海。", story: "7-10公尺高的空中軌道，色彩繽紛的復古車廂。強烈建議此方向，因為軌道靠海側，拍照不被干擾。", tips: "必須提前 2-3 週上網訂票，現場幾乎不可能買到理想時段。", icon: "fa-train", transit: { method: "膠囊列車", duration: "30 分鐘", desc: "沿海慢行抵達", icon: "fa-train" } },
-          { time: "14:30 - 16:30", type: "single", title: "青沙浦海岸與午茶", koreanName: "청사포", mapQuery: "청사포", address: "釜山廣域市海雲台區青沙浦", tags: ["海景咖啡", "燈塔"], description: "紅白燈塔拍照，找間海景咖啡廳休息。", story: "「釜山版櫻木花道平交道」，氛圍比海雲台寧靜純樸，非常適合吃甜點休息。", tips: "推薦 H.US Coffee 或 Alice Donut。", icon: "fa-mug-hot", transit: { method: "計程車/公車", duration: "約 30 分鐘", desc: "前往 Centum City", icon: "fa-taxi" } },
-          { time: "17:00 - 19:30", type: "single", title: "Spa Land 五星汗蒸幕", koreanName: "스파랜드 센텀시티", mapQuery: "스파랜드 센텀시티", address: "新世界百貨 Centum City 店 1樓", tags: ["放鬆回血", "不接待幼童"], description: "韓國最高級汗蒸幕之一，完美消除步行的疲勞。", story: "多達 13 種不同溫度的特色熱療室、戶外足浴池。設備新穎極度乾淨，無傳統汗蒸幕的雜亂感。", tips: "單次入場基本限時 4 小時。必體驗：羊角毛巾與甜米露。", icon: "fa-cloud", transit: { method: "步行", duration: "5 分鐘", desc: "百貨內或周邊", icon: "fa-shoe-prints" } },
-          { time: "19:30 - 21:00", type: "choices", title: "晚餐：Centum City 或 海雲台", description: "泡完湯後，吃頓大餐補充體力。", options: [ { title: "海成烤腸本店", koreanName: "해성막창집 본점", mapQuery: "해성막창집 본점", address: "釜山廣域市海雲台區中洞1路19街29", tags: ["人氣烤牛腸", "排隊霸主"], description: "海雲台排隊霸主，大腸處理得極度肥美。", story: "大腸烤至表皮焦脆、油脂噴發，再配上燒酒，是韓劇裡最標準的宵夜場景。", tips: "極長排隊（1小時以上常見），建議提早。吃完必點火鍋收尾。" }, { title: "巨大韓牛", koreanName: "거대갈비 본점", mapQuery: "거대갈비 본점", address: "釜山廣域市海雲台區迎月路43", tags: ["頂級韓牛", "高消費"], description: "海雲台排名第一的頂級韓牛。", story: "全程專人代烤，入口即化的雪花牛與極致的服務體驗。若預算充足，這將是旅程中最難忘的一餐。", tips: "建議請飯店櫃檯協助提前訂位。單人消費通常破 2500 台幣。" }, { title: "新世界百貨美食街", koreanName: "신세계백화점 센텀시티점 푸드코트", mapQuery: "신세계백화점 센텀시티점", address: "新世界百貨 Centum City B1", tags: ["綜合百貨", "免排隊"], description: "全韓國數一數二的美食街，選擇極多。", story: "若泡完汗蒸幕已經全身慵懶不想移動，這裡有韓式冷麵、拌飯到各國料理應有盡有。", tips: "Spa Land 走出來即是，尋找座位約 5-10 分鐘。" } ], icon: "fa-utensils" }
+          { time: "09:00 - 10:00", type: "single", title: "冬柏島海岸散步", koreanName: "동백섬", mapQuery: "해운대 동백섬", address: "釜山廣域市海雲台區冬柏路", tags: ["絕美海景", "輕鬆散步"], 
+            description: "沿著海岸木棧道，將釜山東海與海雲台沙灘盡收眼底。", 
+            stayTime: "1 小時", queueTime: "無",
+            highlights: "APEC 世峰樓 (Nurimaru)、黃玉公主美人魚銅像、海雲台全景拍攝點。",
+            story: "冬柏島原本是一座獨立的島嶼，後來因泥沙淤積與陸地相連。這裡被茂密的海松與冬柏樹覆蓋，沿著懸崖邊建有極其平緩好走的木棧道。從這裡慢慢散步走向海雲台，能拍出最具代表性的海景明信片照。", 
+            tips: "【路線建議】搭乘地鐵至「冬柏站」1 號出口，步行約 10 分鐘即可抵達入口。早上光線順光，海水看起來會特別湛藍。",
+            icon: "fa-tree", transit: { method: "步行", duration: "10-15 分鐘", desc: "沿著沙灘前往餐廳", icon: "fa-shoe-prints" } 
+          },
+          { time: "11:30 - 13:00", type: "choices", title: "午餐：海雲台名店", description: "在海景勝地品嚐米其林推薦或人氣美食。", options: [ 
+            { title: "錦繡河豚 (海雲台本店)", koreanName: "금수복국 해운대본점", mapQuery: "금수복국 해운대본점", address: "海雲台區中洞1路43街23", tags: ["米其林推介", "解酒聖品"], 
+              description: "釜山代表性老字號，處理完美的鮮甜河豚湯。", 
+              stayTime: "1 小時", queueTime: "約 15 分鐘",
+              highlights: "必點：銀漢河豚清湯 (은복국)、炸河豚 (복튀김)。",
+              story: "獲米其林必比登推介的 24 小時名店！韓國人視河豚湯為最高級的解酒湯。店家處理技術極佳，完全無毒。清湯加入了大量水芹與豆芽，湯頭鮮甜無比，河豚肉質緊實Ｑ彈，猶如田雞肉。", 
+              tips: "有分清湯 (맑은탕) 與辣湯 (매운탕)，強烈建議點「清湯」才能喝出原味鮮甜。" 
+            }, 
+            { title: "密陽血腸豬肉湯飯", koreanName: "밀양순대돼지국밥", mapQuery: "밀양순대돼지국밥 해운대점", address: "海雲台區龜南路28", tags: ["濃厚湯頭", "地點極佳"], 
+              description: "若不敢吃河豚，這是海雲台大街上最穩妥的選擇。", 
+              stayTime: "45 分鐘", queueTime: "翻桌快，約 10 分鐘",
+              highlights: "必點：血腸豬肉湯飯 (순대국밥)、白切肉定食 (수육백반)。",
+              story: "位於海雲台主幹道上，三層樓的巨大店面。相較於西面湯飯的清澈，這家的湯頭熬煮得更加濃郁，呈現雪白的乳色，且完全沒有豬腥味，非常適合初次嘗試的旅客。", 
+              tips: "定食會將肉與湯分開上，可以體驗生菜包肉的吃法。" 
+            }, 
+            { title: "極東豬肉湯飯", koreanName: "극동돼지국밥", mapQuery: "극동돼지국밥 해운대", address: "海雲台區迎月路62街", tags: ["排隊名店", "清爽系"], 
+              description: "海雲台另一家質感極佳的清爽系湯飯。", 
+              stayTime: "45 分鐘", queueTime: "約 20 分鐘",
+              highlights: "湯頭清澈純粹，使用高品質的韓國國產豬肉。",
+              story: "近年在韓國年輕人與觀光客間極具人氣，用餐環境乾淨明亮。它的湯頭屬於清爽系，喝完碗底不會有厚重的沉澱物，肉片切得很薄，口感極佳。", 
+              tips: "距離下午要搭乘膠囊列車的「尾浦站」非常近，吃完走過去剛剛好。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "步行", duration: "15-20 分鐘", desc: "前往尾浦站搭車", icon: "fa-shoe-prints" } },
+          { time: "14:00 - 14:30", type: "single", title: "天空膠囊列車", koreanName: "해운대블루라인파크 미포정거장", mapQuery: "해운대블루라인파크 미포정거장", address: "尾浦站 (海雲台區迎月路62號街13)", tags: ["網美打卡", "必須預約"], 
+            description: "在空中軌道飽覽蔚藍東海，釜山最火紅景點。", 
+            stayTime: "搭乘 30 分鐘", queueTime: "依預約時段排隊上車",
+            highlights: "復古紅、黃、綠、藍色車廂，無死角的海景視野。",
+            story: "將廢棄的舊東海南部線鐵道活化，在 7-10 公尺高的高架軌道上運行。車廂小巧可愛（最多乘載 4 人），行駛速度極慢，讓您有充足的時間拍下窗外波光粼粼的海面與松樹林。", 
+            tips: "【方向與訂票秘訣】強烈建議訂『尾浦出發 ➜ 青沙浦下車』的方向！因為這個方向的軌道是「靠海側」，拍照時不會被對向車道擋住海景。每月第二個週二開放預訂下個月的票。",
+            icon: "fa-train-tram", transit: { method: "膠囊列車", duration: "30 分鐘", desc: "抵達純樸漁港", icon: "fa-train" } 
+          },
+          { time: "14:30 - 16:30", type: "single", title: "青沙浦海岸與午茶", koreanName: "청사포", mapQuery: "청사포", address: "釜山廣域市海雲台區青沙浦", tags: ["海景咖啡", "灌籃高手"], 
+            description: "尋找海岸平交道，並在海景咖啡廳享受午後時光。", 
+            stayTime: "2 小時", queueTime: "無",
+            highlights: "青沙浦紅白燈塔、平交道海景、海濱列車通過的瞬間。",
+            story: "青沙浦是一個靜謐的小漁港，有著「釜山版櫻木花道平交道」的美稱。當海岸列車從平交道駛過，背景是無垠的蔚藍大海，畫面極度療癒。港口的紅白雙子燈塔也是必拍地標。", 
+            tips: "【推薦咖啡廳】『H.US Coffee』擁有絕佳的階梯式海景座位；『Alice Donut』的甜甜圈外觀浮誇可愛，非常適合打卡。",
+            icon: "fa-camera", transit: { method: "計程車/公車", duration: "約 30 分鐘", desc: "前往 Centum City 百貨", icon: "fa-taxi" } 
+          },
+          { time: "17:00 - 19:30", type: "single", title: "Spa Land 頂級汗蒸幕", koreanName: "스파랜드 센텀시티", mapQuery: "스파랜드 센텀시티", address: "新世界百貨 Centum City 店 1樓", tags: ["放鬆回血", "五星級"], 
+            description: "韓國設施最豪華乾淨的汗蒸幕，完美消除旅途疲勞。", 
+            stayTime: "2.5 - 4 小時", queueTime: "入場約 5 分鐘",
+            highlights: "13 種特色熱療室 (喜馬拉雅鹽房、黃土房)、戶外天然足浴池、羊角毛巾與甜米露。",
+            story: "位於金氏世界紀錄「世界最大百貨公司」內部。這裡汲取了地下兩種不同的天然溫泉水。環境極度高級且新穎，完全沒有傳統汗蒸幕的擁擠與雜亂感，是讓雙腳回血的完美中繼站。", 
+            tips: "【規則注意】基本入場限時 4 小時（若在內消費滿 1 萬韓元可延長至 6 小時）。為了維持安靜品質，8 歲以下兒童禁止進入。強烈建議在 KKday/Klook 先買好電子票，比現場便宜很多。",
+            icon: "fa-hot-tub-person", transit: { method: "步行", duration: "5 分鐘", desc: "百貨內或周邊覓食", icon: "fa-shoe-prints" } 
+          },
+          { time: "19:30 - 21:00", type: "choices", title: "晚餐：海雲台大餐", description: "泡完溫泉肚子餓了，用高熱量或頂級美食慰勞自己。", options: [ 
+            { title: "海成烤腸本店", koreanName: "해성막창집 본점", mapQuery: "해성막창집 본점", address: "海雲台區中洞1路19街29", tags: ["人氣烤牛腸", "排隊霸主"], 
+              description: "海雲台深夜排隊霸主，大腸處理得極度肥美焦脆。", 
+              stayTime: "1.5 小時", queueTime: "1 小時以上 (常見)",
+              highlights: "必點：烤大腸 (대창)、烤皺胃 (막창)、牛腸火鍋 (곱창전골)。",
+              story: "韓劇裡吃烤腸配燒酒的最佳寫照！內臟處理得非常乾淨無異味。當肥美的大腸在鐵板上烤至表皮微焦，咬下去油脂在嘴裡爆發的香氣，讓人停不下來。", 
+              tips: "【點餐規則】初次點餐肉類必須點滿 3 份（例如 2 份大腸+1 份皺胃）。若想吃火鍋，火鍋必須點 2 份起跳。建議吃完烤腸後加點火鍋，最後再用火鍋湯底炒飯收尾！" 
+            }, 
+            { title: "巨大韓牛 本店", koreanName: "거대갈비 본점", mapQuery: "거대갈비 본점", address: "海雲台區迎月路43", tags: ["頂級韓牛", "預算充足"], 
+              description: "海雲台排名第一的 1++ 頂級韓牛專賣店。", 
+              stayTime: "2 小時", queueTime: "建議預約",
+              highlights: "必點：頂級雪花牛 (特上霜降)。全程專人桌邊代烤服務。",
+              story: "如果您這趟旅程預算充足，這絕對是必吃神店。選用韓國最高等級 (1++) 的韓牛，油花分布猶如藝術品，入口即化。從精緻的韓式小菜到無微不至的烤肉服務，體驗極佳。", 
+              tips: "單人消費通常會超過 2,500 台幣。強烈建議請飯店櫃檯提前幾天協助電話訂位。" 
+            }, 
+            { title: "新世界百貨 B1 美食街", koreanName: "신세계백화점 센텀시티점 푸드코트", mapQuery: "신세계백화점 센텀시티점", address: "新世界百貨 B1", tags: ["免排隊", "選擇多元"], 
+              description: "若泡完汗蒸幕已經慵懶不想移動，這裡是最好的選擇。", 
+              stayTime: "1 小時", queueTime: "尋找座位約 10 分鐘",
+              highlights: "韓式冷麵、拌飯、小吃、各國料理應有盡有。",
+              story: "全韓國數一數二豪華的百貨地下美食街，匯集了韓國各地知名餐廳的分店。", 
+              tips: "請注意百貨公司打烊時間（平日 20:00，週末 20:30），若太晚出來可能會吃不到。" 
+            } 
+          ], icon: "fa-utensils" }
         ]
       },
       {
-        day: 3, dateLabel: "5/8(五)", title: "文化散步日、舊城區探索日", budget: "約 65,000 KRW",
-        memo: ["札嘎其市場買海鮮建議先查好行情，若擔心可改吃定價明確的密麵。","甘川文化村請在上午9點半前抵達，才能拍出無人空景。","【體力調節】長輩同行可刪甘川，改去松島搭纜車與逛南浦洞。","【雨天備案】果斷取消山城與纜車，啟動「南浦洞室內購物模式」。"],
+        day: 3, dateLabel: "5/8(五)", title: "文化散步日、舊城區探索", budget: "約 65,000 KRW",
+        memo: [
+          "甘川文化村上午 9:30 前抵達才能拍出無人空景，請穿最好走的鞋。",
+          "札嘎其市場買海鮮水很深，務必先在網路上查好「時價行情」再出手。",
+          "【雨天備案】果斷放棄甘川與松島纜車，啟動「南浦洞室內購物模式」（樂天百貨光復店+地下街）。"
+        ],
         events: [
-          { time: "09:30 - 12:00", type: "single", title: "甘川文化村", koreanName: "감천문화마을", mapQuery: "감천문화마을", address: "釜山廣域市沙下區甘川2路203", tags: ["打卡熱點", "高低起伏"], description: "穿梭「韓國馬丘比丘」的童話巷弄，尋找小王子。", story: "曾是韓戰難民聚落，後化身為絕美打卡地，有著豐富歷史故事與視覺衝擊。", tips: "從土城站強烈建議直接叫計程車上山（約 4,000 韓元），省時省力。", icon: "fa-location-dot", transit: { method: "計程車", duration: "10-15 分鐘", desc: "下山直達南浦洞", icon: "fa-taxi" } },
-          { time: "12:30 - 14:00", type: "choices", title: "午餐：札嘎其或南浦洞美食", description: "品嚐舊城區特有的海鮮或冷麵文化。", options: [ { title: "札嘎其市場 (生猛海鮮)", koreanName: "자갈치시장", mapQuery: "자갈치시장", address: "釜山廣域市中區札嘎其海岸路52", tags: ["最大海鮮市場", "生吃章魚"], description: "一樓挑海鮮，三樓代客料理。", story: "韓國最大的海鮮市場。體驗活章魚在嘴裡吸附的奇妙觸感，是來釜山最具震撼力的飲食文化。", tips: "建議先在網路查好大約行情（論隻還是論斤）再講價。" }, { title: "奶奶伽倻密麵", koreanName: "할매가야밀면", mapQuery: "할매가야밀면", address: "釜山廣域市中區光復路56-14", tags: ["釜山特色", "清爽冷麵"], description: "釜山特有的小麥冷麵（密麵），Q彈好咬。", story: "不同於平壤冷麵的蕎麥麵體，密麵更Q彈。搭配碎冰湯頭與微辣醬汁，剛從甘川村爬山下來吃絕對透心涼！", tips: "翻桌快，通常 5-10 分鐘可吃。1人友善。" } ], icon: "fa-utensils", transit: { method: "公車/計程車", duration: "15 分鐘", desc: "前往松島海邊", icon: "fa-bus" } },
-          { time: "14:30 - 16:30", type: "single", title: "松島海上纜車", koreanName: "송도해상케이블카", mapQuery: "송도해상케이블카", address: "釜山廣域市西區松島海邊路171", tags: ["透明車廂", "海風"], description: "搭乘水晶纜車橫跨海灣，走到龍宮雲橋吹海風。", story: "韓國最長的海上纜車之一，橫跨海洋的視覺體驗極佳，終點站有恐龍公園與龍宮雲橋。", tips: "強烈建議購買 Crystal Cruise 透明底車廂。", icon: "fa-compass", transit: { method: "計程車", duration: "15 分鐘", desc: "返回南浦洞商圈", icon: "fa-taxi" } },
-          { time: "17:00 - 19:00", type: "single", title: "南浦洞商圈血拼", koreanName: "BIFF 광장", mapQuery: "BIFF 광장", address: "地鐵札嘎其站 7 號出口周邊", tags: ["逛街購物", "街頭小吃"], description: "逛光復路時尚街，BIFF 廣場吃黑糖餅，走訪國際市場。", story: "南浦洞是釜山最有歷史底蘊的商圈。BIFF廣場的「元祖黑糖餅 (씨앗호떡)」是靈魂小吃，半煎炸將麵團炸得酥脆，剪開塞滿堅果。", tips: "黑糖餅絕對必吃！國際市場內有滿滿雜貨與復古氛圍。", icon: "fa-bag-shopping", transit: { method: "步行", duration: "商圈內移動", desc: "", icon: "fa-shoe-prints" } },
-          { time: "19:00 - 20:30", type: "choices", title: "晚餐：南浦洞必吃名店", description: "體驗當地人瘋狂排隊的特色晚餐。", options: [ { title: "李在模披薩 南浦本店", koreanName: "이재모피자 본점", mapQuery: "이재모피자 본점", address: "釜山廣域市中區光復中央路31", tags: ["浮誇起司", "當地神店"], description: "釜山當地人瘋狂排隊的超級名店！", story: "起司用量極度浮誇，採用韓國產的高級莫札瑞拉起司，奶香濃郁且餅皮鬆軟，完全顛覆對厚片披薩的想像。", tips: "尖峰時段需等 1 小時以上，建議下午5點先去抽號碼牌再去逛街。" }, { title: "Stone Street 義式餐酒館", koreanName: "스톤스트리트", mapQuery: "스톤스트리트 남포", address: "南浦洞商圈內", tags: ["SNS爆紅", "女性最愛"], description: "招牌：麝香葡萄沙拉搭配烤餅與乳酪醬。", story: "在韓國SNS上爆紅。香甜微酸的麝香葡萄搭配濃郁乳酪醬抹在熱騰騰烤餅上，風味極特殊清爽。", tips: "適合喜歡精緻氛圍的旅客。" }, { title: "海田烤盲鰻", koreanName: "해전곱창", mapQuery: "해전곱창", address: "南浦洞周邊", tags: ["釜山特產", "深度在地"], description: "釜山特有的在地食材盲鰻，口感爽脆彈牙。", story: "外觀雖不討喜，但加入大量大蒜與辣醬熱炒後，最後再加點炒飯收汁，是非常深度的在地美味。", tips: "適合喜歡重口味、敢嘗試特殊食材的旅客。" } ], icon: "fa-utensils", transit: { method: "步行", duration: "5-10 分鐘", desc: "前往夜市", icon: "fa-shoe-prints" } },
-          { time: "20:30 - 22:00", type: "single", title: "富平罐頭市場 夜市", koreanName: "부평깡통시장", mapQuery: "부평깡통시장", address: "釜山廣域市中區富平1街48", tags: ["夜生活", "宵夜"], description: "19:30後夜市攤販進駐，體驗在地夜生活。", story: "充滿生命力的傳統市場，晚上化身美食天堂。若不想吃東西，可登上旁邊的釜山鑽石塔看夜景。", tips: "結束後搭乘地鐵1號線直達西面站回飯店。", icon: "fa-location-dot" }
+          { time: "09:30 - 12:00", type: "single", title: "甘川文化村", koreanName: "감천문화마을", mapQuery: "감천문화마을", address: "釜山廣域市沙下區甘川2路203", tags: ["打卡熱點", "極多階梯"], 
+            description: "穿梭「韓國馬丘比丘」的童話巷弄，與小王子並肩看海。", 
+            stayTime: "2.5 小時", queueTime: "和小王子拍照需排隊 15-30 分鐘",
+            highlights: "小王子與沙漠狐狸雕像、入口處購買地圖收集印章換明信片。",
+            story: "這裡曾是韓戰時期難民沿著陡峭山坡建立的貧民聚落。後來經過政府與藝術家改造，將房屋漆成粉瀾的色彩，並在巷弄間佈滿壁畫與裝置藝術，化身為絕美的童話村落。每一條小巷都充滿了歷史底蘊與視覺衝擊。", 
+            tips: "【交通與禮儀】強烈建議從地鐵「土城站」出來後，直接叫計程車上山（車資約 4,000 韓元），千萬別自己爬坡！此處至今仍有當地居民居住，請務必降低音量，勿擅闖民宅。",
+            icon: "fa-palette", transit: { method: "計程車", duration: "10-15 分鐘", desc: "下山直達南浦洞區", icon: "fa-taxi" } 
+          },
+          { time: "12:30 - 14:00", type: "choices", title: "午餐：舊城區平民美食", description: "品嚐極具衝擊力的活海鮮，或是透心涼的釜山冷麵。", options: [ 
+            { title: "札嘎其市場 (吃海鮮)", koreanName: "자갈치시장", mapQuery: "자갈치시장", address: "中區札嘎其海岸路52", tags: ["最大海鮮市場", "生吃章魚"], 
+              description: "韓國最大海鮮集散地，體驗震撼的活章魚。", 
+              stayTime: "1.5 小時", queueTime: "挑海鮮議價需時間",
+              highlights: "必吃：生拌活章魚 (산낙지)、松葉蟹、烤魚定食。",
+              story: "整棟建築極具規模。玩法是：在 1 樓的攤位挑選生猛海鮮並議價，然後拿著海鮮到 2 樓的「代客料理區 (Chojang-jip)」找座位，店家會收取人頭費（料理費）幫你處理。活章魚吸附在口腔內的觸感，是來韓國必解鎖的成就。", 
+              tips: "若擔心語言不通或被坑，也可以直接到 2 樓找有標價的餐廳點定食，或是到市場外圍的「烤魚一條街」吃平價烤魚定食。" 
+            }, 
+            { title: "奶奶伽倻密麵", koreanName: "할매가야밀면", mapQuery: "할매가야밀면", address: "中區光復路56-14", tags: ["釜山特色", "清爽消暑"], 
+              description: "釜山特有的小麥冷麵，剛爬完山吃最過癮。", 
+              stayTime: "45 分鐘", queueTime: "翻桌快，約 5-10 分鐘",
+              highlights: "必點：水密麵 (물밀면)、拌密麵 (비빔밀면)、手工大餃子 (왕만두)。",
+              story: "「密麵 (Milmyeon)」是釜山獨有的食物。韓戰時難民逃到釜山，因為缺乏蕎麥，改用美軍援助的小麥粉製作冷麵。麵體比一般冷麵更 Q 彈有嚼勁。水密麵的高湯帶有碎冰與微辣的紅醬，極度透心涼。", 
+              tips: "吃麵前店家會送上一壺熱熱的「大骨高湯 (On-yuksu)」，非常暖胃，喝完可免費續壺。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "公車/計程車", duration: "15 分鐘", desc: "前往松島海邊", icon: "fa-taxi" } },
+          { time: "14:30 - 16:30", type: "single", title: "松島海上纜車", koreanName: "송도해상케이블카", mapQuery: "송도해상케이블카", address: "西區松島海邊路171", tags: ["透明車廂", "海風"], 
+            description: "搭乘底部全透明的水晶纜車橫跨海灣。", 
+            stayTime: "2 小時", queueTime: "搭車排隊 15-20 分鐘",
+            highlights: "水晶車廂 (Crystal Cruise)、終點站的龍宮雲橋與恐龍公園。",
+            story: "這是韓國最長的海上纜車之一。纜車從松島海水浴場出發，橫越海洋到達對岸的岩南公園。若選擇透明底部的車廂，可以清楚俯瞰腳下的湛藍海水與消波塊，視覺體驗非常刺激。", 
+            tips: "抵達對岸後，可以花 1,000 韓元走上「松島龍宮雲橋」，這是一條懸空在海浪礁石上的鐵網步道，風非常大，戴帽子請小心。",
+            icon: "fa-cable-car", transit: { method: "計程車", duration: "15 分鐘", desc: "返回南浦洞商圈", icon: "fa-taxi" } 
+          },
+          { time: "17:00 - 19:00", type: "single", title: "南浦洞商圈血拼", koreanName: "BIFF 광장", mapQuery: "BIFF 광장", address: "地鐵札嘎其站至南浦站一帶", tags: ["逛街購物", "靈魂小吃"], 
+            description: "釜山最有歷史底蘊的商圈，從時尚美妝逛到傳統市場。", 
+            stayTime: "2 小時", queueTime: "無",
+            highlights: "必吃：BIFF廣場的「元祖黑糖餅 (씨앗호떡)」；必逛：光復路時尚街、國際市場。",
+            story: "南浦洞的地位類似於首爾的南大門。這裡有明亮的光復路可以買各大品牌的球鞋美妝，也有充滿生活感的「國際市場」可以挖寶雜貨。BIFF 廣場地上印有歷屆電影節名人的手印。", 
+            tips: "【絕對必吃】BIFF 廣場的黑糖餅攤位！麵團在鐵板上用半煎炸的方式處理得極度酥脆，阿姨用剪刀剪開後塞滿葵花子等堅果，鹹甜交織，是釜山最強街頭甜點。",
+            icon: "fa-bag-shopping", transit: { method: "步行", duration: "商圈內移動", desc: "準備吃晚餐", icon: "fa-shoe-prints" } 
+          },
+          { time: "19:00 - 20:30", type: "choices", title: "晚餐：南浦洞名店", description: "體驗當地人瘋狂排隊的異國料理或深度在地美味。", options: [ 
+            { title: "李在模披薩 (南浦本店)", koreanName: "이재모피자 본점", mapQuery: "이재모피자 본점", address: "中區光復中央路31", tags: ["浮誇起司", "當地神店"], 
+              description: "釜山當地人瘋狂排隊的超級名店！顛覆對厚片披薩的想像。", 
+              stayTime: "1.5 小時", queueTime: "尖峰時段 1-1.5 小時",
+              highlights: "必點：李在模招牌披薩 (芝心餅皮)、烤箱起司義大利麵。",
+              story: "這絕對是釜山最火紅的披薩店！採用韓國任實郡生產的高級純莫札瑞拉起司，用量極度浮誇，拉絲可以拉到天際。餅皮烤得外酥內鬆軟，奶香極其濃郁。店內採用超多機器人穿梭送餐，極具特色。", 
+              tips: "【排隊攻略】請在下午 5 點左右，先繞過去店門口的機台輸入人數抽取號碼牌 (可選無需手機號碼的選項)，然後再去逛街，抓準時間回來入座。" 
+            }, 
+            { title: "Stone Street 義式餐酒館", koreanName: "스톤스트리트", mapQuery: "스톤스트리트 남포", address: "南浦洞商圈內", tags: ["SNS爆紅", "精緻排隊"], 
+              description: "韓國女性極其喜愛的排隊餐酒館，招牌沙拉必吃。", 
+              stayTime: "1.5 小時", queueTime: "約 30-45 分鐘",
+              highlights: "必點：麝香葡萄瑞可塔起司沙拉 (附烤餅)、各式義大利麵。",
+              story: "在韓國 SNS 上爆紅。將香甜微酸的青葡萄，搭配濃郁的自製瑞可塔乳酪醬，抹在剛出爐熱騰騰的口袋烤餅上，風味極度清爽特殊，是韓食吃膩時的最佳轉換。", 
+              tips: "店面較小，建議提早前往候位。" 
+            }, 
+            { title: "海田烤盲鰻", koreanName: "해전곱창", mapQuery: "해전곱창", address: "南浦洞周邊", tags: ["釜山特產", "重口味"], 
+              description: "挑戰釜山特有的在地食材「盲鰻」，口感極致爽脆。", 
+              stayTime: "1.5 小時", queueTime: "約 15 分鐘",
+              highlights: "必點：調味烤盲鰻 (양념 꼼장어)，吃完必加點炒飯。",
+              story: "盲鰻外觀像蛇，處理時極具視覺衝擊（會蠕動）。但經過阿姨加入大量大蒜、洋蔥與韓式辣醬在錫箔紙上高溫熱炒後，盲鰻的口感會變得極其「脆彈Ｑ爽」，是標準的下酒菜。", 
+              tips: "極度重口味。最後一定要留一點醬汁，請阿姨加入白飯和海苔絲做成鐵板炒飯，那才是精華所在。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "步行", duration: "5-10 分鐘", desc: "前往夜市", icon: "fa-shoe-prints" } },
+          { time: "20:30 - 22:00", type: "single", title: "富平罐頭市場 夜市", koreanName: "부평깡통시장", mapQuery: "부평깡통시장", address: "中區富平1街48", tags: ["夜生活", "街頭小吃"], 
+            description: "釜山最熱鬧的常態性夜市，尋找各式特色小吃。", 
+            stayTime: "1.5 小時", queueTime: "熱門攤位需排隊",
+            highlights: "烤五花肉卷、牛奶炸炸、糖葫蘆、各式果汁與煎餅。",
+            story: "因韓戰後這裡曾是美軍罐頭等軍需品的走私集散地而得名。白天是傳統市場，晚上 19:30 過後，巷道中間會推入一整排裝飾明亮的夜市攤車。左邊右邊各一排前進，動線規劃良好。", 
+            tips: "【注意】請準備小面額現金。逛完後，可慢慢散步至地鐵 1 號線「札嘎其站」搭車回西面休息。",
+            icon: "fa-store" 
+          }
         ]
       },
       {
         day: 4, dateLabel: "5/9(六)", title: "海岸巡禮、潮流與浪漫遊艇", budget: "約 94,000 KRW",
-        memo: ["午餐「Tonshou」若無事先用 App (Catchtable) 抽號碼牌，現場絕對撲空。","遊艇搭乘場地極大，務必提早 20 分鐘抵達尋找指定的登船口。","【體力調節】睡到自然醒，刪除早上的海東龍宮寺，中午直接去廣安里。","【雨天備案】請取消遊艇，改逛 Centum City 新世界百貨或西面地下街。"],
+        memo: [
+          "午餐「Tonshou」若無事先用 Catchtable 抽號碼牌，現場 100% 撲空。",
+          "晚上的遊艇搭乘場地極大，務必提早 20 分鐘抵達尋找指定的登船口。",
+          "【雨天備案】大雨會毀掉海景與遊艇體驗，請立刻聯絡客服取消或延期遊艇，改逛室內全球最大百貨 Centum City。"
+        ],
         events: [
-          { time: "09:30 - 11:30", type: "single", title: "海東龍宮寺", koreanName: "해동용궁사", mapQuery: "해동용궁사", address: "釜山廣域市機張郡機張邑龍宮街86", tags: ["絕美海景", "海上寺廟"], description: "站在懸崖邊聽海浪誦經，韓國唯一海上寺廟。", story: "建在陡峭的海岸礁石上，海浪拍打岩石的聲音與誦經聲交織，氣場極佳。摸一摸布袋和尚雕像據說能帶來好運。", tips: "從「奧西利亞站」搭計程車前往約5分鐘，極度建議不要等公車。", icon: "fa-location-dot", transit: { method: "計程車", duration: "約 30 分鐘", desc: "前往廣安里商圈", icon: "fa-taxi" } },
-          { time: "12:30 - 14:00", type: "choices", title: "午餐：廣安里排隊名店", description: "在海景旁享受釜山最新潮或最傳統的美食。", options: [ { title: "Tonshou 炸豬排 (廣安店)", koreanName: "톤쇼우 광안점", mapQuery: "톤쇼우 광안점", address: "釜山廣域市水營區廣安海邊路279號街13", tags: ["極度難排", "頂級黑豬肉"], description: "釜山目前「最難排」的傳奇名店！", story: "選用頂級黑豬肉，炸出極致粉嫩、肉汁狂噴的剖面，帶有淡淡炭香。", tips: "警告：必須在當天早上 10:00 透過 Catchtable App 搶號碼牌，現場候位幾乎吃不到。" }, { title: "水邊最高豬肉湯飯", koreanName: "수변최고돼지국밥 민락본점", mapQuery: "수변최고돼지국밥 민락본점", address: "釜山廣域市水營區廣安海邊路370街9-32", tags: ["松阪豬", "湯飯王者"], description: "廣安里地區的湯飯王者，肉量極具誠意。", story: "特色是使用脆Q的「松阪豬」取代一般豬肉片，口感細嫩綿密，湯頭鮮甜。", tips: "用餐尖峰約需等候 30-40 分鐘（可先抽號碼牌再去逛逛）。" }, { title: "Slice of Life Pizza (SOL)", koreanName: "솔피자", mapQuery: "솔탭하우스 광안점", address: "廣安里海邊", tags: ["美式薄片", "配生啤"], description: "若韓食吃膩了，這家主打美式薄片披薩。", story: "餅皮帶有極佳的Q勁與脆度，配著窗外的廣安大橋與生啤酒，極度放鬆。", tips: "邊看海景邊吃披薩的絕佳選擇。" } ], icon: "fa-utensils", transit: { method: "步行", duration: "10-15 分鐘", desc: "沿海灘漫步", icon: "fa-shoe-prints" } },
-          { time: "14:00 - 16:30", type: "single", title: "Millac the Market", koreanName: "밀락더마켓", mapQuery: "밀락더마켓", address: "釜山廣域市水營區民樂水边路17街56", tags: ["複合文化空間", "避寒避暑"], description: "擁有廣安大橋海景階梯的潮流新地標。", story: "紅磚倉庫改建的新興地標，充滿文創小店與海景階梯座位，非常適合午後避暑或避風。", tips: "買杯生啤坐在玻璃帷幕前的階梯上看海，非常愜意。", icon: "fa-bag-shopping", transit: { method: "步行", duration: "漫步", desc: "找間咖啡廳", icon: "fa-shoe-prints" } },
-          { time: "16:30 - 17:30", type: "single", title: "廣安里海景咖啡廳", koreanName: "광안리해수욕장", mapQuery: "광안리해수욕장", address: "廣安里沿岸咖啡廳", tags: ["等待夕陽", "廣安大橋"], description: "找間面海咖啡廳，等待廣安大橋黃昏點燈。", story: "廣安里擁有與海雲台截然不同的年輕氛圍。靜靜等待大橋點燈，是廣安里最浪漫的時刻。", tips: "推薦咖啡廳：Cha Sun Hwa, Rendeja-Vous 等。", icon: "fa-mug-hot", transit: { method: "步行", duration: "5 分鐘", desc: "前往晚餐", icon: "fa-shoe-prints" } },
-          { time: "17:30 - 19:00", type: "choices", title: "晚餐：韓味大口吃肉", description: "準備搭乘遊艇前，先填飽肚子。", options: [ { title: "Mujolla 韓味碳烤豬肋排", koreanName: "무졸라", mapQuery: "무졸라 광안리", address: "廣安里商圈內", tags: ["烤豬肋排", "洋釀醬汁"], description: "烤豬五花吃膩時的最佳解藥。", story: "肋排表面烤得酥脆，肉質極嫩，骨肉分離。抹上甜辣的洋釀醬汁，啃起來爽度破表。", tips: "推薦點 原味/洋釀 雙拼。" }, { title: "廣安里烤貝街", koreanName: "민락어민활어직판장", mapQuery: "민락어민활어직판장", address: "民樂漁民活魚中心一帶", tags: ["海鮮燒烤", "自己動手"], description: "看著海景自己動手烤扇貝。", story: "加上起司與洋蔥的烤扇貝，是極具在地風情的晚餐選擇。", tips: "體驗海港城市的豪邁吃法。" } ], icon: "fa-utensils", transit: { method: "計程車", duration: "10 分鐘", desc: "至遊艇競技場", icon: "fa-taxi" } },
-          { time: "19:30 - 20:30", type: "single", title: "廣安里 / 水營灣 遊艇體驗", koreanName: "수영만 요트경기장", mapQuery: "수영만 요트경기장", address: "海雲台區海雲台海邊路84", tags: ["極致浪漫", "海上煙火"], description: "搭乘雙體帆船駛向廣安大橋正下方。", story: "性價比極高的奢華體驗！晚上的班次通常會施放小型煙火，伴隨音樂與海風，絕對是釜山行最高光的記憶點。", tips: "強烈建議提前在旅遊平台預約晚間時段（19:00 或 20:00 班次）。", icon: "fa-compass" }
+          { time: "09:30 - 11:30", type: "single", title: "海東龍宮寺", koreanName: "해동용궁사", mapQuery: "해동용궁사", address: "機張郡機張邑龍宮街86", tags: ["海上寺廟", "絕美氣場"], 
+            description: "站在懸崖邊聽海浪誦經，韓國唯一建在海上的寺廟。", 
+            stayTime: "1.5 小時", queueTime: "無",
+            highlights: "108階梯、大雄寶殿、摸肚子能帶來好運的布袋和尚雕像。",
+            story: "有別於韓國傳統深山裡的寺廟，海東龍宮寺建在東海岸陡峭的岩石懸崖上。走下 108 階梯時，海浪拍打岩石的巨大聲響與寺廟的誦經聲交織，氣場極佳，也是韓國最著名的迎日出勝地。", 
+            tips: "【交通建議】從東海線「奧西利亞站 (Osiria)」搭計程車前往約 5-8 分鐘（車資約 5000 韓元），極度建議不要等公車。若有體力，旁邊的「Skyline Luge 釜山斜坡滑車」也非常刺激好玩。",
+            icon: "fa-vihara", transit: { method: "計程車", duration: "約 30 分鐘", desc: "前往廣安里商圈", icon: "fa-taxi" } 
+          },
+          { time: "12:30 - 14:00", type: "choices", title: "午餐：廣安里排隊名店", description: "在擁有大橋海景的廣安里享受最受矚目的美食。", options: [ 
+            { title: "Tonshou 炸豬排 (廣安店)", koreanName: "톤쇼우 광안점", mapQuery: "톤쇼우 광안점", address: "水營區廣安海邊路279號街13", tags: ["極度難排", "頂級黑豬肉"], 
+              description: "釜山目前「最難排」的傳奇名店！極致粉嫩的炸豬排。", 
+              stayTime: "1 小時", queueTime: "現場候位幾乎不可能",
+              highlights: "必點：特級里肌炸豬排 (Berkshire K Roast Pork)。",
+              story: "這家店已經成為釜山的美食傳奇。選用頂級黑豬肉，以低溫油炸再用炭火微微燻烤，切開來的剖面呈現極致的粉紅色，咬下去肉汁狂噴，帶有淡淡炭香，旁邊會附上松露鹽等高級沾料。", 
+              tips: "【警告與攻略】必須在當天早上 10:00 整，透過韓國排隊 App「CatchTable（英文版）」搶號碼牌！晚 1 分鐘可能就會排到幾百號以後。" 
+            }, 
+            { title: "水邊最高豬肉湯飯", koreanName: "수변최고돼지국밥", mapQuery: "수변최고돼지국밥 민락본점", address: "水營區廣安海邊路370街", tags: ["松阪豬", "湯飯王者"], 
+              description: "廣安里地區的湯飯霸主，使用高級松阪豬。", 
+              stayTime: "45 分鐘", queueTime: "約 30-40 分鐘",
+              highlights: "必點：松阪豬肉湯飯 (항정국밥)。",
+              story: "有別於傳統湯飯使用腿肉或內臟，這家店的最大特色是使用極其脆Ｑ的「松阪豬 (豬頸肉)」，肉量給得極具誠意。口感細嫩綿密，湯頭鮮甜濃郁，許多韓國明星都曾造訪。", 
+              tips: "建議抵達廣安里時，先用門口的機台抽號碼牌，再去海邊或旁邊的 Millac the Market 逛逛殺時間。" 
+            }, 
+            { title: "SOL Taphouse 披薩", koreanName: "솔피자", mapQuery: "솔탭하우스 광안점", address: "廣安里海濱路路邊", tags: ["美式薄片", "大橋海景"], 
+              description: "若韓食吃膩了，這家能邊看無敵海景邊吃披薩。", 
+              stayTime: "1 小時", queueTime: "約 15 分鐘",
+              highlights: "紐約風切片披薩、各式精釀生啤酒。",
+              story: "位於大樓的 4 樓，擁有正對「廣安大橋」的大面積玻璃窗。主打道地的紐約美式薄片披薩，餅皮帶有極佳的Ｑ勁與脆度，配著窗外的無敵海景與冰涼的生啤，極度放鬆 Chill。", 
+              tips: "適合不想大排長龍，想找個舒服地方坐著看海休息的旅客。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "步行", duration: "10-15 分鐘", desc: "沿海灘漫步", icon: "fa-shoe-prints" } },
+          { time: "14:00 - 16:30", type: "single", title: "Millac the Market", koreanName: "밀락더마켓", mapQuery: "밀락더마켓", address: "水營區民樂水边路17街56", tags: ["潮流複合", "避寒避暑"], 
+            description: "擁有廣安大橋海景階梯的潮流文創地標。", 
+            stayTime: "1.5 小時", queueTime: "無",
+            highlights: "挑高海景階梯座位區、文創小物店、星巴克與各式甜點。",
+            story: "這是一棟紅磚倉庫改建的新興地標。內部充滿了韓國在地設計師的選物店、潮流服飾與美食攤位。最經典的設計是盡頭一整面朝向廣安大橋的巨大玻璃帷幕，前方設有階梯式座位。", 
+            tips: "買杯生啤或咖啡，坐在階梯上看著遠方的大橋與海面上穿梭的遊艇，是消磨午後時光的最佳去處。",
+            icon: "fa-store", transit: { method: "步行", duration: "漫步", desc: "找間咖啡廳等夕陽", icon: "fa-shoe-prints" } 
+          },
+          { time: "16:30 - 17:30", type: "single", title: "廣安里海景咖啡廳", koreanName: "광안리해수욕장", mapQuery: "광안리해수욕장", address: "廣安里沿岸", tags: ["夕陽", "廣安大橋"], 
+            description: "找間面海咖啡廳，等待廣安大橋黃昏點燈。", 
+            stayTime: "1 小時", queueTime: "無",
+            highlights: "茅草陽傘沙灘、廣安大橋日夜交替的魔幻時刻。",
+            story: "廣安里擁有與海雲台截然不同的年輕氛圍。沿著沙灘的主幹道上，佈滿了極具設計感的三、四層樓海景咖啡廳。靜靜等待大橋在黃昏時分點亮璀璨的燈光，是廣安里最浪漫的時刻。", 
+            tips: "【推薦咖啡廳】『Cha Sun Hwa』有著質感的茶飲與韓式傳統甜點；『Rendeja-Vous』則是以濟州島石牆為主題的知名連鎖網美店。",
+            icon: "fa-mug-hot", transit: { method: "步行", duration: "5 分鐘", desc: "前往晚餐", icon: "fa-shoe-prints" } 
+          },
+          { time: "17:30 - 19:00", type: "choices", title: "晚餐：大口吃肉或海鮮", description: "準備搭乘遊艇前，先填飽肚子。", options: [ 
+            { title: "Mujolla 韓味碳烤豬肋排", koreanName: "무졸라", mapQuery: "무졸라 광안리", address: "廣安里商圈內", tags: ["烤豬肋排", "洋釀醬汁"], 
+              description: "烤豬五花吃膩時的最佳解藥，浮誇的烤肋排。", 
+              stayTime: "1.5 小時", queueTime: "約 15-30 分鐘",
+              highlights: "必點：原味/洋釀(辣甜) 雙拼烤豬肋排，起司蒸蛋。",
+              story: "戴上手套，直接拿起整根肋排啃！肋排表面烤得極度酥脆，但內部的肉質卻鮮嫩到骨肉分離。抹上甜辣的洋釀醬汁，再配上牽絲的起司，邪惡程度破表，爽度極高。", 
+              tips: "建議點雙拼口味，才不會從頭到尾都吃同一個味道而覺得膩。" 
+            }, 
+            { title: "廣安里烤貝街", koreanName: "민락어민활어직판장", mapQuery: "민락어민활어직판장", address: "民樂漁民活魚中心一帶", tags: ["海鮮燒烤", "自己動手"], 
+              description: "看著海景，大啖起司烤扇貝。", 
+              stayTime: "1.5 小時", queueTime: "依店家而定",
+              highlights: "炭火烤扇貝，加入滿滿起司與洋蔥丁。",
+              story: "在廣安里靠東側的漁民市場周邊，有許多烤貝類專賣店（例如：超力烤盲鰻/烤貝）。將巨大的扇貝放在炭火上，看著它冒泡，撒上起司與特調醬汁，是極具海港城市風情的晚餐。", 
+              tips: "烤貝類多半需要自己動手烤，要注意火候以免烤焦。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "計程車", duration: "10 分鐘", desc: "至遊艇競技場", icon: "fa-taxi" } },
+          { time: "19:30 - 20:30", type: "single", title: "廣安里星空遊艇體驗", koreanName: "수영만 요트경기장", mapQuery: "수영만 요트경기장", address: "海雲台區海雲台海邊路84", tags: ["極致浪漫", "海上煙火"], 
+            description: "搭乘雙體帆船駛向大橋正下方，伴隨煙火秀。", 
+            stayTime: "1 小時", queueTime: "需提早 20 分鐘報到",
+            highlights: "躺在遊艇前方的網袋上吹海風、近距離仰望廣安大橋、船長施放的海上煙火。",
+            story: "這絕對是釜山行性價比最高、最高光的記憶點！一趟約 500 台幣，就能搭乘豪華的雙體帆船出海。晚上的班次，各家遊艇的船長會將船停在廣安大橋旁，一起在海上施放小型煙火，伴隨浪漫的音樂與微涼海風，氣氛絕佳。", 
+            tips: "【重要須知】搭乘地點在「水營灣遊艇競技場」，場地極大，請務必提早抵達尋找對應的登船號碼柱。上船需換穿船家提供的室內拖鞋。容易暈船者請提早吃藥。",
+            icon: "fa-ship" 
+          }
         ]
       },
       {
         day: 5, dateLabel: "5/10(日)", title: "收尾日、最後採買與歸途", budget: "約 50,000 KRW",
-        memo: ["金海機場若遇多班機起飛，退稅排隊人龍極長，務必 11:45 前抵達。","買的「芝麻油、醬料、果凍」必須放進托運行李，不可隨身！","最後去機場強烈建議「叫計程車」，花錢買輕鬆。","【雨天備案】若遇大雨易塞車，請立刻放棄計程車，改搭地鐵轉輕軌以免錯過班機！"],
+        memo: [
+          "金海機場若遇多班機起飛，退稅與免稅提領排隊人龍極長，務必提早報到。",
+          "買的「芝麻油、韓式辣醬、果凍」屬液體/膠狀，必須放進托運行李，不可隨身！",
+          "【最後交通】強烈建議直接用 Kakao T 叫計程車去機場，花錢買輕鬆。"
+        ],
         events: [
-          { time: "09:00 - 10:15", type: "single", title: "釜田市場 最後採買", koreanName: "부전시장", mapQuery: "부전시장", address: "釜山廣域市釜山鎮區中央大路783街23", tags: ["傳統市場", "海苔芝麻油"], description: "被稱為「釜山的廚房」，適合採買生鮮乾貨。", story: "相比觀光客眾多的國際市場，這裡保留了更純粹的在地生活感，物價更親民。買帶有濃郁香氣的韓國芝麻油回台是一大絕配。", tips: "市場多為現金交易；生鮮水果無法帶回台灣，請買路上能吃完的份量即可。", icon: "fa-bag-shopping", transit: { method: "步行", duration: "5-10 分鐘", desc: "回西面商圈", icon: "fa-shoe-prints" } },
-          { time: "10:15 - 10:45", type: "choices", title: "早午餐：西面在地朝食", description: "中午需趕往機場，建議此時吃頓豐盛早午餐。", options: [ { title: "機張手工刀切麵", koreanName: "기장손칼국수", mapQuery: "기장손칼국수 서면", address: "西面站 1號 或 7號出口後方巷弄", tags: ["人氣老店", "手工揉製"], description: "麵條非常有嚼勁，配麻油紫菜包飯。", story: "阿姨現場手工揉製切出，湯頭帶有濃濃的鯷魚與海帶鮮甜，是極度撫慰腸胃的完美早餐。", tips: "早上通常不需排隊。必點刀切麵+紫菜包飯。" }, { title: "Isaac Toast 西面樂天店", koreanName: "이삭토스트 부산서면롯데점", mapQuery: "이삭토스트 부산서면롯데점", address: "西面商圈內", tags: ["國民早餐", "奶油鐵板"], description: "韓國國民早餐！外帶極度方便。", story: "用大量奶油在鐵板上煎烤吐司，抹上獨門的奇異果特調甜醬，夾入高麗菜絲與煎蛋。", tips: "推薦：培根 MVP 吐司、烤排骨 MVP 吐司。" }, { title: "SKY31 機場美食街", koreanName: "김해국제공항 국제선", mapQuery: "김해국제공항 국제선", address: "金海機場國際線 3樓", tags: ["機場美食", "不趕時間"], description: "若早上起得晚，可直接到機場 3 樓解決。", story: "這裡有提供韓式定食、炸醬麵與湯飯，雖然價格比市區稍貴，但吃完直接下樓通關，時間掌控最安穩。", tips: "適合行李多、想早點抵達機場的旅客。" } ], icon: "fa-utensils", transit: { method: "飯店拿行李 ➜ 計程車", duration: "約 30 分鐘", desc: "最推薦叫車", icon: "fa-taxi" } },
-          { time: "11:00 - 13:40", type: "single", title: "金海機場報到與退稅", koreanName: "김해국제공항", mapQuery: "김해국제공항", address: "金海機場出境大廳", tags: ["準備返台", "退稅注意"], description: "辦理退稅、托運、登機。", story: "計程車車資約 18,000 - 22,000 韓元，省去扛行李上下的痛苦。若遇下雨塞車，請改搭「西面(地鐵) ➜ 沙上(轉輕軌) ➜ 機場」。", tips: "抵達後先去自助機台(Kiosk)掃退稅單 ➜ 櫃檯報到 ➜ 安檢 ➜ 退稅領現金。13:40 班機起飛。", icon: "fa-plane-arrival" }
+          { time: "09:00 - 10:15", type: "single", title: "釜田市場 最後採買", koreanName: "부전시장", mapQuery: "부전시장", address: "釜山鎮區中央大路783街23", tags: ["傳統市場", "海苔芝麻油"], 
+            description: "被稱為「釜山的廚房」，最適合採買生鮮乾貨伴手禮。", 
+            stayTime: "1.2 小時", queueTime: "無",
+            highlights: "現榨韓國芝麻油、大包裝海苔、明太子醬、當季水果。",
+            story: "相比觀光客眾多的南浦洞國際市場，釜田市場保留了更純粹的在地生活感，物價也更親民。這裡可以買到帶有極濃郁香氣的「韓國現榨芝麻油」，買回台灣煮湯或涼拌是一大絕配。", 
+            tips: "【提醒】市場內多為現金交易。生鮮水果無法帶回台灣，請買路上能吃完的份量即可。",
+            icon: "fa-bag-shopping", transit: { method: "步行/地鐵", duration: "10 分鐘", desc: "回西面商圈吃早午餐", icon: "fa-shoe-prints" } 
+          },
+          { time: "10:15 - 10:45", type: "choices", title: "早午餐：西面在地朝食", description: "中午需趕往機場，建議此時吃頓豐盛早午餐墊胃。", options: [ 
+            { title: "機張手工刀切麵", koreanName: "기장손칼국수", mapQuery: "기장손칼국수 서면", address: "西面站 1號 或 7號出口後方巷弄", tags: ["人氣老店", "手工揉製"], 
+              description: "阿姨現場手工揉製，麵條非常有嚼勁。", 
+              stayTime: "40 分鐘", queueTime: "早上通常不需排隊",
+              highlights: "必點：手工刀切麵 (손칼국수)、紫菜包飯 (김밥)。",
+              story: "西面市場內的人氣老店。刀切麵的麵條粗細不一，口感極其Ｑ彈；湯頭帶有濃濃的鯷魚與海帶鮮甜。配上一卷充滿麻油香氣的紫菜包飯，便宜又極度撫慰腸胃。", 
+              tips: "若前幾天已經吃遍西面美食，這天也可睡晚一點直接去機場覓食。" 
+            }, 
+            { title: "Isaac Toast 奶油吐司", koreanName: "이삭토스트 부산서면롯데점", mapQuery: "이삭토스트 부산서면롯데점", address: "西面商圈內", tags: ["國民早餐", "外帶方便"], 
+              description: "韓國國民早餐！鐵板煎烤，香氣四溢。", 
+              stayTime: "20 分鐘", queueTime: "約 10 分鐘",
+              highlights: "必點：培根 MVP 吐司、烤排骨 MVP 吐司。",
+              story: "用大量奶油在鐵板上煎烤吐司，抹上獨門的奇異果特調甜醬，夾入高麗菜絲、酸黃瓜與方形煎蛋，甜鹹的口味讓人一吃上癮。", 
+              tips: "非常適合外帶回飯店，邊收行李邊吃。" 
+            }, 
+            { title: "SKY31 機場美食街", koreanName: "김해국제공항 국제선", mapQuery: "김해국제공항 국제선", address: "金海機場國際線 3樓", tags: ["機場美食", "不趕時間"], 
+              description: "提早抵達機場安檢後的最佳選擇。", 
+              stayTime: "45 分鐘", queueTime: "視機場人潮",
+              highlights: "韓式豬排定食、炸醬麵、湯飯。",
+              story: "若早上起得晚或行李太多不想折騰，可以直接搭車到機場 3 樓解決。這裡提供的韓食品質中上，雖然價格比市區稍貴，但吃完直接下樓報到通關，時間掌控最安穩。", 
+              tips: "機場內亦有 CU 便利商店可買三角飯糰或香蕉牛奶。" 
+            } 
+          ], icon: "fa-utensils", transit: { method: "飯店拿行李 ➜ 計程車", duration: "約 30 分鐘", desc: "最推薦叫車", icon: "fa-taxi" } },
+          { time: "11:00 - 13:40", type: "single", title: "金海機場報到與退稅", koreanName: "김해국제공항", mapQuery: "김해국제공항", address: "金海機場出境大廳", tags: ["準備返台", "退稅注意"], 
+            description: "辦理退稅、托運、登機，帶著滿滿回憶返台。", 
+            stayTime: "2-3 小時", queueTime: "安檢與退稅排隊較長",
+            highlights: "自助退稅機台掃單、領取免稅品、登機。",
+            story: "從西面搭乘計程車前往機場車資約 18,000 - 22,000 韓元，能省去在地鐵站扛行李上下的痛苦，強烈推薦。若遇大雨易塞車，請立刻放棄計程車，改搭地鐵轉輕軌。", 
+            tips: "【退稅流程】抵達機場後 ➜ 先去自助機台(Kiosk)掃描退稅單護照 ➜ 航空公司櫃檯報到托運 ➜ 安檢通關 ➜ 到候機室的退稅櫃台領取現金。13:40 班機起飛返回台北。",
+            icon: "fa-plane-departure" 
+          }
         ]
       }
     ];
 
-    // --- 🔧 Helper: 天氣代碼轉換 FontAwesome 圖示 ---
-    const getWeatherIcon = (code, size = 18) => {
+    const getWeatherIcon = (code) => {
       if (code === 0) return { icon: "fa-sun", text: '晴天', color: 'text-amber-500', bg: 'bg-amber-50' };
       if (code >= 1 && code <= 3) return { icon: "fa-cloud-sun", text: '多雲', color: 'text-gray-500', bg: 'bg-gray-100' };
       if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { icon: "fa-cloud-rain", text: '雨天', color: 'text-blue-500', bg: 'bg-blue-50' };
@@ -149,7 +438,6 @@
       return `${d.getMonth() + 1}/${d.getDate()} ${days[d.getDay()]}`;
     };
 
-    // --- 元件：匯率 ---
     const ExchangeRateWidget = () => {
       const [rate, setRate] = useState(null);
       const [amount, setAmount] = useState(10000); 
@@ -210,7 +498,6 @@
       );
     };
 
-    // --- 主 App 元件 ---
     function App() {
       const [activeTab, setActiveTab] = useState('prep');
       const [selectedEvent, setSelectedEvent] = useState(null);
@@ -324,7 +611,7 @@
               const dayData = itineraryData.find(d => `day${d.day}` === activeTab);
               const dayIndex = dayData.day - 1;
               const dayWeather = weeklyWeather && weeklyWeather.length > dayIndex ? weeklyWeather[dayIndex] : null;
-              const weatherUI = dayWeather ? getWeatherIcon(dayWeather.code, 16) : null;
+              const weatherUI = dayWeather ? getWeatherIcon(dayWeather.code) : null;
               return (
                 <div className="pb-24 animate-in fade-in duration-300">
                   <div className="pt-6 pb-4 px-5">
@@ -377,7 +664,7 @@
                     {!weeklyWeather ? (<p className="text-sm text-gray-400">天氣資料連線中...</p>) : (
                       <div className="space-y-3">
                         {weeklyWeather.map((day, idx) => {
-                          const wUI = getWeatherIcon(day.code, 16);
+                          const wUI = getWeatherIcon(day.code);
                           return (
                             <div key={idx} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg border-b border-gray-50 last:border-0">
                               <span className="w-16 text-sm font-bold text-gray-700">{idx === 0 ? '今天' : getDayOfWeek(day.date)}</span>
@@ -399,29 +686,78 @@
             )}
           </main>
 
-          {/* Modal */}
+          {/* 🚀 擴充版 Modal：展現深度資訊 */}
           {selectedEvent && (
             <>
-              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 max-w-md mx-auto" onClick={() => setSelectedEvent(null)} />
-              <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col h-[85vh]">
-                <div className="flex justify-between items-start p-5 pb-0 shrink-0">
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 max-w-md mx-auto transition-opacity" onClick={() => setSelectedEvent(null)} />
+              <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col h-[90vh] animate-in slide-in-from-bottom duration-300">
+                
+                <div className="flex justify-between items-start p-5 pb-3 shrink-0 border-b border-gray-100">
                    <div className="pr-4">
-                     {selectedEvent.time && <span className="text-xs font-bold text-[#0078D7] bg-[#E5F1FB] px-2 py-1 rounded mb-2 inline-block">{selectedEvent.time}</span>}
-                     <h2 className="text-2xl font-serif-tc font-bold text-gray-900 mt-1 leading-snug">{selectedEvent.title}</h2>
+                     <div className="flex items-center space-x-2 mb-2">
+                       {selectedEvent.time && <span className="text-xs font-bold text-[#0078D7] bg-[#E5F1FB] px-2 py-1 rounded">{selectedEvent.time}</span>}
+                       {selectedEvent.tags?.slice(0,1).map(t => <span key={t} className="text-[10px] font-bold text-gray-500 border border-gray-200 px-2 py-1 rounded-full">{t}</span>)}
+                     </div>
+                     <h2 className="text-2xl font-serif-tc font-bold text-gray-900 leading-snug">{selectedEvent.title}</h2>
                      <p className="text-sm text-gray-500 font-medium mt-1 select-all">{selectedEvent.koreanName}</p>
                    </div>
-                   <button onClick={() => setSelectedEvent(null)} className="p-2 bg-gray-100 rounded-full text-gray-500 shrink-0 flex items-center justify-center w-10 h-10"><i className="fa-solid fa-xmark text-[20px]"></i></button>
+                   <button onClick={() => setSelectedEvent(null)} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 shrink-0 flex items-center justify-center w-10 h-10"><i className="fa-solid fa-xmark text-[20px]"></i></button>
                 </div>
+
                 <div className="p-5 overflow-y-auto pb-28 custom-scrollbar flex-1">
                    <div className="space-y-6">
-                     <div><h4 className="text-xs font-serif-tc font-bold text-gray-500 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-circle-info mr-1.5 text-[14px]"></i>景點故事 / 必吃必買</h4><p className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-line bg-gray-50 p-4 rounded-xl">{selectedEvent.story}</p></div>
-                     <div><h4 className="text-xs font-serif-tc font-bold text-gray-500 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-circle-check mr-1.5 text-[14px]"></i>實用建議與備選</h4><p className="text-[#0078D7] font-medium leading-relaxed text-[14px]">{selectedEvent.tips}</p></div>
-                     <div className="border-t border-gray-100 pt-5"><h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2">韓文地址</h4><p className="text-gray-600 text-sm select-all">{selectedEvent.address}</p></div>
+                     
+                     {/* Quick Stats Row */}
+                     <div className="flex gap-3">
+                       {selectedEvent.stayTime && (
+                         <div className="flex-1 bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                           <i className="fa-regular fa-hourglass-half text-[#0078D7] text-[16px] mb-1"></i>
+                           <span className="text-[10px] text-gray-400 font-bold mb-0.5">建議停留</span>
+                           <span className="text-xs font-bold text-gray-700">{selectedEvent.stayTime}</span>
+                         </div>
+                       )}
+                       {selectedEvent.queueTime && (
+                         <div className="flex-1 bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                           <i className="fa-solid fa-people-line text-orange-500 text-[16px] mb-1"></i>
+                           <span className="text-[10px] text-gray-400 font-bold mb-0.5">排隊狀況</span>
+                           <span className="text-xs font-bold text-gray-700">{selectedEvent.queueTime}</span>
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Highlights */}
+                     {selectedEvent.highlights && (
+                       <div className="bg-[#E5F1FB]/50 border-l-4 border-[#0078D7] p-3 rounded-r-xl">
+                         <h4 className="text-xs font-serif-tc font-bold text-[#0078D7] tracking-wider mb-1 flex items-center"><i className="fa-solid fa-star mr-1.5"></i>最佳看點 / 必點招牌</h4>
+                         <p className="text-gray-700 text-sm font-medium leading-relaxed">{selectedEvent.highlights}</p>
+                       </div>
+                     )}
+
+                     {/* Story / Intro */}
+                     <div>
+                       <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-book-open mr-1.5 text-[14px]"></i>深度介紹</h4>
+                       <p className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-line">{selectedEvent.story}</p>
+                     </div>
+
+                     {/* Tips & Backup */}
+                     <div>
+                       <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-lightbulb mr-1.5 text-[14px] text-amber-500"></i>實用攻略與提醒</h4>
+                       <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                         <p className="text-amber-800 font-medium leading-relaxed text-[14px] whitespace-pre-line">{selectedEvent.tips}</p>
+                       </div>
+                     </div>
+
+                     {/* Address */}
+                     <div className="border-t border-gray-100 pt-5">
+                       <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-map-pin mr-1.5"></i>詳細地址</h4>
+                       <p className="text-gray-600 text-sm select-all bg-gray-50 p-3 rounded-lg">{selectedEvent.address}</p>
+                     </div>
                    </div>
                 </div>
+
                 <div className="absolute bottom-6 left-5 right-5 z-50">
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedEvent.mapQuery || selectedEvent.koreanName)}`} target="_blank" rel="noopener noreferrer" className="w-full bg-[#0078D7] text-white py-4 rounded-2xl font-bold font-serif-tc shadow-lg shadow-[#0078D7]/30 flex items-center justify-center tracking-widest">
-                    <i className="fa-solid fa-location-arrow mr-2 text-[18px]"></i>開啟 Google Map 導航
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedEvent.mapQuery || selectedEvent.koreanName)}`} target="_blank" rel="noopener noreferrer" className="w-full bg-[#0078D7] text-white py-4 rounded-2xl font-bold font-serif-tc shadow-lg shadow-[#0078D7]/30 flex items-center justify-center tracking-widest text-[15px]">
+                    <i className="fa-solid fa-location-arrow mr-2 text-[18px]"></i>一鍵導航 (Google Map)
                   </a>
                 </div>
               </div>
