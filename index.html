@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="釜山攻略">
+  <meta name="theme-color" content="#0078D7">
+  <title>釜山 5天4夜 深度攻略</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
+
+    :root {
+      --brand: #0078D7;
+      --brand-soft: #E5F1FB;
+      --bg: #FAFAFA;
+      --card: #FFFFFF;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .font-serif-tc {
+      font-family: 'Noto Serif TC', "PMingLiU", "Songti TC", serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #d1e8ff;
+      border-radius: 9999px;
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .safe-bottom {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 220ms ease-out;
+    }
+
+    .animate-slide-up {
+      animation: slideUp 260ms ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div style="padding:16px; color:#b91c1c; font-weight:700;">這個頁面需要開啟 JavaScript 才能正常使用。</div>
+  </noscript>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react,env">
+    const { useState, useEffect, useMemo } = React;
+
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+
+      componentDidCatch(error, errorInfo) {
+        console.error('React render error:', error, errorInfo);
+      }
+
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', padding: '24px', background: '#FAFAFA' }}>
+              <div style={{ background: '#fff', border: '1px solid #fecaca', borderRadius: '20px', padding: '20px', boxShadow: '0 8px 30px rgba(0,0,0,.06)' }}>
+                <div style={{ color: '#b91c1c', fontWeight: 800, marginBottom: '8px' }}>頁面執行發生錯誤</div>
+                <div style={{ color: '#7f1d1d', lineHeight: 1.7, fontSize: '14px' }}>
+                  {this.state.error?.message || '未知錯誤'}
+                </div>
+                <button
+                  onClick={() => window.location.reload()}
+                  style={{ marginTop: '16px', background: '#0078D7', color: '#fff', border: '0', borderRadius: '12px', padding: '12px 16px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  重新整理
+                </button>
+              </div>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    const prepData = {
+      checklist: [
+        { title: '護照與簽證 K-ETA', desc: '確認護照效期至少 6 個月。持台灣護照入境韓國的規定偶有調整，出發前請再次確認最新入境條件、是否需事先申報，以及是否要填 Q-Code。' },
+        { title: '預約熱門票券', desc: '天空膠囊列車、廣安里星空遊艇、釜山滑車，建議至少提早數週預訂。夕陽與夜景時段最容易售罄。' }
+      ],
+      apps: [
+        { name: 'Naver Map', desc: '韓國最實用的導航工具，步行與大眾運輸資訊完整。' },
+        { name: 'Papago', desc: '韓文翻譯準確度高，拍照翻譯菜單與語音翻譯都很好用。' },
+        { name: 'Kakao T', desc: '韓國叫車工具，可綁卡或用部分現場付款方案。' },
+        { name: 'Visit Busan Pass', desc: '若有買通行證，建議先綁定，方便查詢可用景點與剩餘時數。' }
+      ],
+      weather: [
+        { title: '5 月氣候與穿搭', desc: '釜山 5 月通常早晚偏涼、海風吹感明顯，白天則較舒適。建議採洋蔥式穿搭，隨身帶薄外套。' },
+        { title: '裝備提醒', desc: '韓國插座為 220V 雙圓孔。釜山坡道與階梯多，鞋子舒適度比穿搭更重要。' }
+      ],
+      payment: [
+        { title: '網路建議 eSIM', desc: '落地後就能開通，省去換卡與保管實體 SIM 的麻煩。' },
+        { title: '交通支付 WOWPASS', desc: '可結合外幣換匯與交通卡功能，對觀光客相當方便。' },
+        { title: '現金準備', desc: '傳統市場、部分小攤與布帳馬車較常收現金，建議準備一筆小額韓元備用。' }
+      ],
+      accommodation: {
+        recommended: '西面',
+        reason: '西面位於地鐵樞紐，前往海雲台、南浦洞與機場都相對平衡。回程若是中午前後班機，住西面拖行李會輕鬆很多。',
+        comparisons: [
+          { area: '西面', pro: '交通最平均，飲食與換錢方便', con: '離海景區較遠' },
+          { area: '海雲台', pro: '度假感最強，海邊步行即可到', con: '往返舊城區較花時間' },
+          { area: '南浦洞', pro: '市場與舊城區景點密集', con: '去東側海岸線較遠' }
+        ]
+      }
+    };
+
+    const itineraryData = [
+      {
+        day: 1,
+        tripDate: '2026-05-06',
+        dateLabel: '5/6(三)',
+        title: '抵達日、輕鬆適應日',
+        budget: '約 47,500 KRW',
+        memo: [
+          '西面換錢所通常比機場划算，機場先換足夠搭車與小額消費即可。',
+          '布帳馬車點餐前先問價格，沒有標價時更要確認。',
+          '若晚餐選味讚王，尖峰時段排隊時間可能偏長。'
+        ],
+        events: [
+          { time: '15:45 - 16:45', type: 'single', title: '金海機場抵達與出關', koreanName: '김해국제공항', mapQuery: '김해국제공항', address: '釜山廣域市江西區機場進出路108', tags: ['交通', '入境'], description: '抵達後完成入境、整理網路與交通卡。', stayTime: '約 1 小時', queueTime: '出關約 30 到 45 分鐘', highlights: '機場 1 樓可處理交通卡與基本補給。', story: '金海國際機場規模適中，動線相對單純。出關後先把網路與交通處理好，後面的移動會順很多。', tips: '建議搭乘輕軌到沙上站，再轉地鐵 2 號線前往西面，時間較穩定。', icon: 'fa-plane-arrival', transit: { method: '輕軌轉地鐵', duration: '約 40 分鐘', desc: '至沙上站轉乘 2 號線', icon: 'fa-train' } },
+          { time: '16:45 - 17:45', type: 'single', title: '西面站 飯店 Check-in', koreanName: '서면역', mapQuery: '서면역', address: '釜山廣域市釜山鎮區西面', tags: ['住宿', '市中心'], description: '前往飯店安置行李，稍作休息。', stayTime: '45 分鐘', queueTime: '無', highlights: '西面是 1 號線與 2 號線的重要轉乘點。', story: '西面是釜山核心商圈之一，交通、購物與餐飲都很集中，作為住宿基地很實用。', tips: '若回程班機偏早，住西面前往機場相對省力。', icon: 'fa-bed', transit: { method: '步行', duration: '10 分鐘', desc: '前往商圈', icon: 'fa-shoe-prints' } },
+          { time: '18:00 - 19:00', type: 'single', title: '西面商圈換匯與初探', koreanName: '서면지하상가', mapQuery: '서면지하상가', address: '西面站周邊與地下商街', tags: ['換錢', '購物'], description: '先補足現金，再逛地下街與周邊商圈。', stayTime: '1 小時', queueTime: '換匯約 5 分鐘', highlights: '可順便熟悉地下街與百貨位置。', story: '第一天不排太多高強度景點，先讓身體適應城市節奏，也順手把現金備齊。', tips: '下雨時，西面地下街與百貨足以撐起半天行程。', icon: 'fa-won-sign', transit: { method: '步行', duration: '5 分鐘', desc: '準備吃晚餐', icon: 'fa-shoe-prints' } },
+          { time: '19:00 - 20:30', type: 'choices', title: '晚餐 西面美食洗禮', description: '用紮實的韓式晚餐開啟旅程。', options: [
+            { title: '味讚王鹽烤肉', koreanName: '맛찬들왕소금구이 서면점', mapQuery: '맛찬들왕소금구이 서면점', address: '釜山鎮區中央大路691街32', tags: ['必吃烤肉', '專人代烤'], description: '厚切豬五花相當有人氣。', stayTime: '1.5 小時', queueTime: '尖峰約 30 到 45 分鐘', highlights: '厚切豬五花與石鍋大醬湯很受歡迎。', story: '熟成肉搭配專人代烤，對第一次到釜山的人相當友善。', tips: '韓國烤肉店常有最低點餐份數限制，點餐前先確認。' },
+            { title: '松亭3代豬肉湯飯', koreanName: '송정3대국밥', mapQuery: '송정3대국밥', address: '釜山鎮區西面路68街33', tags: ['鄉土料理', '24小時'], description: '釜山代表性庶民美食。', stayTime: '45 分鐘', queueTime: '翻桌快，約 5 到 10 分鐘', highlights: '豬肉湯飯與血腸都值得一試。', story: '湯頭濃郁卻不會太重，自己加韭菜與蝦醬調味很有參與感。', tips: '單人旅客也很適合。' },
+            { title: '雪夜覓 水芹松阪豬', koreanName: '설야멱', mapQuery: '설야멱 서면본점', address: '西面站周邊商圈', tags: ['藍絲帶', '創意烤肉'], description: '水芹菜搭配松阪豬的組合很有記憶點。', stayTime: '1.5 小時', queueTime: '約 20 到 30 分鐘', highlights: '多種特製沾醬讓風味層次更完整。', story: '整體風格比傳統烤肉店更精緻，適合想吃好一點的人。', tips: '店內排風較好，吃完身上味道通常較淡。' }
+          ], icon: 'fa-utensils', transit: { method: '步行', duration: '散步', desc: '前往宵夜街', icon: 'fa-shoe-prints' } },
+          { time: '20:30 - 23:00', type: 'single', title: '西面布帳馬車 宵夜體驗', koreanName: '서면 포장마차거리', mapQuery: '서면 포장마차거리', address: '西面樂天百貨總店後方巷弄', tags: ['夜生活', '街邊帳篷'], description: '感受釜山夜生活氛圍。', stayTime: '1.5 小時', queueTime: '依攤位而定', highlights: '魚板湯、辣炒年糕與燒酒很常見。', story: '布帳馬車承載的是韓國街頭文化與深夜社交感，氛圍非常強。', tips: '很多攤位只收現金，點餐前務必先確認價格。', icon: 'fa-tent' }
+        ]
+      },
+      {
+        day: 2,
+        tripDate: '2026-05-07',
+        dateLabel: '5/7(四)',
+        title: '核心觀光日、海景日',
+        budget: '約 114,500 KRW',
+        memo: ['冬柏島與海雲台早點到，人潮會舒服很多。', '天空膠囊列車建議提早 15 分鐘到站。', '若同行者腳力有限，可把早上的步行量縮短。'],
+        events: [
+          { time: '09:00 - 10:00', type: 'single', title: '冬柏島海岸散步', koreanName: '동백섬', mapQuery: '해운대 동백섬', address: '釜山廣域市海雲台區冬柏路', tags: ['絕美海景', '輕鬆散步'], description: '沿木棧道感受海岸線風景。', stayTime: '1 小時', queueTime: '無', highlights: '可拍到海雲台沙灘與海岸線視角。', story: '這裡的路線平緩，適合在早晨暖身，節奏很舒服。', tips: '建議從冬柏站步行前往，光線也比較好。', icon: 'fa-tree', transit: { method: '步行', duration: '10 到 15 分鐘', desc: '沿著沙灘前往餐廳', icon: 'fa-shoe-prints' } },
+          { time: '11:30 - 13:00', type: 'choices', title: '午餐 海雲台名店', description: '在海景區補充一頓像樣的午餐。', options: [
+            { title: '錦繡河豚 海雲台本店', koreanName: '금수복국 해운대본점', mapQuery: '금수복국 해운대본점', address: '海雲台區中洞1路43街23', tags: ['米其林推介', '解酒聖品'], description: '河豚料理代表店。', stayTime: '1 小時', queueTime: '約 15 分鐘', highlights: '清湯河豚很有代表性。', story: '店家處理河豚的技術成熟，湯頭乾淨鮮甜。', tips: '清湯更容易喝出河豚原味。' },
+            { title: '密陽血腸豬肉湯飯', koreanName: '밀양순대돼지국밥', mapQuery: '밀양순대돼지국밥 해운대점', address: '海雲台區龜南路28', tags: ['濃厚湯頭', '地點極佳'], description: '對初次嘗試湯飯的人很友善。', stayTime: '45 分鐘', queueTime: '約 10 分鐘', highlights: '血腸湯飯與白切肉都很穩。', story: '位置方便，餐點穩定，適合不想冒險的人。', tips: '定食類可同時吃到肉與湯。' },
+            { title: '極東豬肉湯飯', koreanName: '극동돼지국밥', mapQuery: '극동돼지국밥 해운대', address: '海雲台區迎月路62街', tags: ['排隊名店', '清爽系'], description: '清爽型湯飯，環境也不錯。', stayTime: '45 分鐘', queueTime: '約 20 分鐘', highlights: '肉質與湯頭都走乾淨路線。', story: '這家在年輕旅客之間口碑很好，整體感受比較俐落。', tips: '離尾浦站不遠，順路很方便。' }
+          ], icon: 'fa-utensils', transit: { method: '步行', duration: '15 到 20 分鐘', desc: '前往尾浦站', icon: 'fa-shoe-prints' } },
+          { time: '14:00 - 14:30', type: 'single', title: '天空膠囊列車', koreanName: '해운대블루라인파크 미포정거장', mapQuery: '해운대블루라인파크 미포정거장', address: '尾浦站 海雲台區迎月路62號街13', tags: ['網美打卡', '必須預約'], description: '釜山人氣很高的海景交通體驗。', stayTime: '30 分鐘', queueTime: '依預約時段排隊', highlights: '彩色小車廂與高架海景是重點。', story: '車速偏慢，正好能好好拍海與松林。', tips: '通常建議從尾浦往青沙浦方向搭，視角較舒服。', icon: 'fa-train-tram', transit: { method: '膠囊列車', duration: '30 分鐘', desc: '抵達青沙浦', icon: 'fa-train' } },
+          { time: '14:30 - 16:30', type: 'single', title: '青沙浦海岸與午茶', koreanName: '청사포', mapQuery: '청사포', address: '釜山廣域市海雲台區青沙浦', tags: ['海景咖啡', '平交道'], description: '海岸、燈塔與咖啡廳都很適合停留。', stayTime: '2 小時', queueTime: '無', highlights: '紅白燈塔與海岸平交道拍照感很強。', story: '青沙浦節奏比海雲台更慢，有種從鬧區退到漁港邊緣的感覺。', tips: '可找海景咖啡廳慢慢待，補充體力。', icon: 'fa-camera', transit: { method: '計程車或公車', duration: '約 30 分鐘', desc: '前往 Centum City', icon: 'fa-taxi' } },
+          { time: '17:00 - 19:30', type: 'single', title: 'Spa Land 頂級汗蒸幕', koreanName: '스파랜드 센텀시티', mapQuery: '스파랜드 센텀시티', address: '新世界百貨 Centum City 店 1樓', tags: ['放鬆回血', '五星級'], description: '高規格汗蒸幕，適合中途回血。', stayTime: '2.5 到 4 小時', queueTime: '入場約 5 分鐘', highlights: '多種熱療室、戶外足浴池、甜米露。', story: '逛完海邊之後在這裡把腳和肩膀放鬆，會明顯感受到差別。', tips: '電子票通常比現場便宜，先買更省事。', icon: 'fa-hot-tub-person', transit: { method: '步行', duration: '5 分鐘', desc: '百貨內或周邊吃晚餐', icon: 'fa-shoe-prints' } },
+          { time: '19:30 - 21:00', type: 'choices', title: '晚餐 海雲台大餐', description: '泡完汗蒸幕後，用一頓重點餐收尾。', options: [
+            { title: '海成烤腸本店', koreanName: '해성막창집 본점', mapQuery: '해성막창집 본점', address: '海雲台區中洞1路19街29', tags: ['人氣烤牛腸', '排隊霸主'], description: '想吃重口味與下酒菜可選這家。', stayTime: '1.5 小時', queueTime: '可能超過 1 小時', highlights: '烤大腸與火鍋都很熱門。', story: '烤腸的油脂香很強，口感派的人會很喜歡。', tips: '點餐規則較多，先看清楚份數限制。' },
+            { title: '巨大韓牛 本店', koreanName: '거대갈비 본점', mapQuery: '거대갈비 본점', address: '海雲台區迎月路43', tags: ['頂級韓牛', '預算充足'], description: '預算夠時很值得。', stayTime: '2 小時', queueTime: '建議預約', highlights: '1++ 韓牛與代烤服務是主軸。', story: '整體從食材到服務都偏高規格，適合安排一餐高點。', tips: '可請飯店協助預約。' },
+            { title: '新世界百貨 B1 美食街', koreanName: '신세계백화점 센텀시티점 푸드코트', mapQuery: '신세계백화점 센텀시티점', address: '新世界百貨 B1', tags: ['免排隊', '選擇多元'], description: '懶得再移動時的穩定選項。', stayTime: '1 小時', queueTime: '視座位而定', highlights: '多樣化餐點選擇。', story: '想節省腳力與時間，直接在百貨解決最有效率。', tips: '注意百貨打烊時間。' }
+          ], icon: 'fa-utensils' }
+        ]
+      },
+      {
+        day: 3,
+        tripDate: '2026-05-08',
+        dateLabel: '5/8(五)',
+        title: '文化散步日、舊城區探索',
+        budget: '約 65,000 KRW',
+        memo: ['甘川文化村越早去越好拍。', '札嘎其買海鮮前先了解行情。', '下雨時可把戶外景點縮減，改逛南浦洞商圈。'],
+        events: [
+          { time: '09:30 - 12:00', type: 'single', title: '甘川文化村', koreanName: '감천문화마을', mapQuery: '감천문화마을', address: '釜山廣域市沙下區甘川2路203', tags: ['打卡熱點', '階梯多'], description: '童話感最強的舊城區地標。', stayTime: '2.5 小時', queueTime: '熱門拍點約 15 到 30 分鐘', highlights: '小王子雕像、彩色山城與印章地圖。', story: '這裡曾經是難民聚落，後來透過社區與藝術計畫翻轉，變成釜山最有辨識度的景點之一。', tips: '建議直接搭計程車上山，省下很多體力。', icon: 'fa-palette', transit: { method: '計程車', duration: '10 到 15 分鐘', desc: '下山直達南浦洞', icon: 'fa-taxi' } },
+          { time: '12:30 - 14:00', type: 'choices', title: '午餐 舊城區平民美食', description: '活海鮮與釜山冷麵各有支持者。', options: [
+            { title: '札嘎其市場 吃海鮮', koreanName: '자갈치시장', mapQuery: '자갈치시장', address: '中區札嘎其海岸路52', tags: ['最大海鮮市場', '活海鮮'], description: '想體驗海港感最直接的地方。', stayTime: '1.5 小時', queueTime: '挑海鮮與議價需時間', highlights: '活章魚、烤魚與代客料理文化。', story: '市場規模很大，視覺刺激也很強，適合重視體驗感的人。', tips: '若怕溝通麻煩，可直接找明碼標價餐廳。' },
+            { title: '奶奶伽倻密麵', koreanName: '할매가야밀면', mapQuery: '할매가야밀면', address: '中區光復路56-14', tags: ['釜山特色', '清爽消暑'], description: '釜山代表性冷麵變體。', stayTime: '45 分鐘', queueTime: '約 5 到 10 分鐘', highlights: '水密麵與手工大餃子是穩定組合。', story: '這是很有釜山地方性的食物，與首爾系冷麵氣質不同。', tips: '店家附的大骨高湯記得喝。' }
+          ], icon: 'fa-utensils', transit: { method: '公車或計程車', duration: '15 分鐘', desc: '前往松島', icon: 'fa-taxi' } },
+          { time: '14:30 - 16:30', type: 'single', title: '松島海上纜車', koreanName: '송도해상케이블카', mapQuery: '송도해상케이블카', address: '西區松島海邊路171', tags: ['透明車廂', '海風'], description: '跨越海灣的纜車體驗。', stayTime: '2 小時', queueTime: '排隊 15 到 20 分鐘', highlights: '透明底部車廂與對岸步道。', story: '這裡把觀光感做得很直接，視野開闊，拍照也很有張力。', tips: '風大時帽子與裙裝要留意。', icon: 'fa-cable-car', transit: { method: '計程車', duration: '15 分鐘', desc: '返回南浦洞', icon: 'fa-taxi' } },
+          { time: '17:00 - 19:00', type: 'single', title: '南浦洞商圈血拼', koreanName: 'BIFF 광장', mapQuery: 'BIFF 광장', address: '札嘎其站至南浦站一帶', tags: ['逛街購物', '靈魂小吃'], description: '新舊交錯感最強的商圈之一。', stayTime: '2 小時', queueTime: '無', highlights: '黑糖餅、光復路、國際市場。', story: '這裡既有觀光感，也有老商圈的生活感，很適合邊走邊逛。', tips: '黑糖餅通常都值得排。', icon: 'fa-bag-shopping', transit: { method: '步行', duration: '商圈內移動', desc: '準備吃晚餐', icon: 'fa-shoe-prints' } },
+          { time: '19:00 - 20:30', type: 'choices', title: '晚餐 南浦洞名店', description: '從披薩到盲鰻，選擇很有個性。', options: [
+            { title: '李在模披薩 南浦本店', koreanName: '이재모피자 본점', mapQuery: '이재모피자 본점', address: '中區光復中央路31', tags: ['浮誇起司', '當地神店'], description: '釜山高人氣披薩店。', stayTime: '1.5 小時', queueTime: '尖峰可能 1 小時以上', highlights: '招牌披薩與焗烤麵都常被點。', story: '起司存在感非常強，口味偏討喜，很容易中。', tips: '可先去抽號碼牌再逛街。' },
+            { title: 'Stone Street 義式餐酒館', koreanName: '스톤스트리트', mapQuery: '스톤스트리트 남포', address: '南浦洞商圈內', tags: ['SNS爆紅', '精緻排隊'], description: '想換口味可選這家。', stayTime: '1.5 小時', queueTime: '約 30 到 45 分鐘', highlights: '葡萄與乳酪系餐點辨識度高。', story: '韓食連吃幾天後，這類型店家會有很好的轉換效果。', tips: '店小，人多時稍有壓力。' },
+            { title: '海田烤盲鰻', koreanName: '해전곱창', mapQuery: '해전곱창', address: '南浦洞周邊', tags: ['釜山特產', '重口味'], description: '重口味在地派會喜歡。', stayTime: '1.5 小時', queueTime: '約 15 分鐘', highlights: '調味烤盲鰻與炒飯。', story: '這是很有地方色彩的食材，吃的是口感與氣氛。', tips: '最後的炒飯通常是精華。' }
+          ], icon: 'fa-utensils', transit: { method: '步行', duration: '5 到 10 分鐘', desc: '前往夜市', icon: 'fa-shoe-prints' } },
+          { time: '20:30 - 22:00', type: 'single', title: '富平罐頭市場 夜市', koreanName: '부평깡통시장', mapQuery: '부평깡통시장', address: '中區富平1街48', tags: ['夜生活', '街頭小吃'], description: '以夜市小吃作為舊城區收尾。', stayTime: '1.5 小時', queueTime: '熱門攤位需排隊', highlights: '街頭小吃選擇多，現場很熱鬧。', story: '白天市場、晚上夜市的雙重性格很有趣。', tips: '準備小鈔更方便。', icon: 'fa-store' }
+        ]
+      },
+      {
+        day: 4,
+        tripDate: '2026-05-09',
+        dateLabel: '5/9(六)',
+        title: '海岸巡禮、潮流與浪漫遊艇',
+        budget: '約 94,000 KRW',
+        memo: ['Tonshou 若沒先排隊，很可能吃不到。', '遊艇競技場範圍大，提早到很重要。', '遇到大雨時，室內百貨會比硬衝海邊更合理。'],
+        events: [
+          { time: '09:30 - 11:30', type: 'single', title: '海東龍宮寺', koreanName: '해동용궁사', mapQuery: '해동용궁사', address: '機張郡機張邑龍宮街86', tags: ['海上寺廟', '絕美氣場'], description: '少見建在海邊岩岸上的寺廟。', stayTime: '1.5 小時', queueTime: '無', highlights: '108 階梯與海景寺廟視角。', story: '海浪聲與寺廟氛圍混在一起，很容易留下記憶點。', tips: '從奧西利亞站搭計程車最省力。', icon: 'fa-vihara', transit: { method: '計程車', duration: '約 30 分鐘', desc: '前往廣安里', icon: 'fa-taxi' } },
+          { time: '12:30 - 14:00', type: 'choices', title: '午餐 廣安里排隊名店', description: '海邊午餐可排名店，也可選舒適系。', options: [
+            { title: 'Tonshou 炸豬排 廣安店', koreanName: '톤쇼우 광안점', mapQuery: '톤쇼우 광안점', address: '水營區廣安海邊路279號街13', tags: ['極度難排', '頂級黑豬肉'], description: '釜山超高人氣炸豬排。', stayTime: '1 小時', queueTime: '現場通常很難等到', highlights: '粉嫩剖面與肉汁感是最大賣點。', story: '這家已經成為很多人到釜山會想挑戰的代表名店。', tips: '搶號要快，晚一點就很吃運氣。' },
+            { title: '水邊最高豬肉湯飯', koreanName: '수변최고돼지국밥', mapQuery: '수변최고돼지국밥 민락본점', address: '水營區廣安海邊路370街', tags: ['松阪豬', '湯飯王者'], description: '想吃穩定派湯飯可選。', stayTime: '45 分鐘', queueTime: '約 30 到 40 分鐘', highlights: '松阪豬口感與湯頭很有特色。', story: '廣安里地區很受歡迎的湯飯店，滿足度高。', tips: '可先抽號碼牌再去旁邊走走。' },
+            { title: 'SOL Taphouse 披薩', koreanName: '솔탭하우스 광안점', mapQuery: '솔탭하우스 광안점', address: '廣安里海濱周邊', tags: ['美式薄片', '大橋海景'], description: '不想久排時很適合。', stayTime: '1 小時', queueTime: '約 15 分鐘', highlights: '窗景與披薩都夠輕鬆。', story: '看海、吃披薩、喝點東西，節奏會比排隊名店柔和很多。', tips: '適合想保留體力給晚上的遊艇行程。' }
+          ], icon: 'fa-utensils', transit: { method: '步行', duration: '10 到 15 分鐘', desc: '沿海灘散步', icon: 'fa-shoe-prints' } },
+          { time: '14:00 - 16:30', type: 'single', title: 'Millac the Market', koreanName: '밀락더마켓', mapQuery: '밀락더마켓', address: '水營區民樂水邊路17街56', tags: ['潮流複合', '避暑避寒'], description: '廣安里近年很受歡迎的複合空間。', stayTime: '1.5 小時', queueTime: '無', highlights: '海景階梯、選物店與飲食區。', story: '它像把市場、選物與海景休息區混在一起，適合放空。', tips: '很適合作為下午過渡行程。', icon: 'fa-store', transit: { method: '步行', duration: '漫步', desc: '等夕陽', icon: 'fa-shoe-prints' } },
+          { time: '16:30 - 17:30', type: 'single', title: '廣安里海景咖啡廳', koreanName: '광안리해수욕장', mapQuery: '광안리해수욕장', address: '廣安里沿岸', tags: ['夕陽', '廣安大橋'], description: '找間面海咖啡廳等橋燈亮起。', stayTime: '1 小時', queueTime: '無', highlights: '黃昏到入夜的橋景變化非常漂亮。', story: '廣安里的魅力常在於停下來等，等光線、等大橋點燈、等夜色完整。', tips: '傍晚是最容易拍出層次的時段。', icon: 'fa-mug-hot', transit: { method: '步行', duration: '5 分鐘', desc: '前往晚餐', icon: 'fa-shoe-prints' } },
+          { time: '17:30 - 19:00', type: 'choices', title: '晚餐 大口吃肉或海鮮', description: '上遊艇前先補滿能量。', options: [
+            { title: 'Mujolla 韓味碳烤豬肋排', koreanName: '무졸라', mapQuery: '무졸라 광안리', address: '廣安里商圈內', tags: ['烤豬肋排', '洋釀醬汁'], description: '想吃爽度高的可選這家。', stayTime: '1.5 小時', queueTime: '約 15 到 30 分鐘', highlights: '雙拼口味比較耐吃。', story: '整體風格偏直接，適合旅行中想吃得過癮的一餐。', tips: '雙拼比單一口味更不容易膩。' },
+            { title: '廣安里烤貝街', koreanName: '민락어민활어직판장', mapQuery: '민락어민활어직판장', address: '民樂漁民活魚中心一帶', tags: ['海鮮燒烤', '自己動手'], description: '海港城市感很強的晚餐選擇。', stayTime: '1.5 小時', queueTime: '依店家而定', highlights: '扇貝、起司與炭火香很有代表性。', story: '邊看海邊烤貝，節奏很釜山。', tips: '自己烤時留意火候。' }
+          ], icon: 'fa-utensils', transit: { method: '計程車', duration: '10 分鐘', desc: '前往遊艇競技場', icon: 'fa-taxi' } },
+          { time: '19:30 - 20:30', type: 'single', title: '廣安里星空遊艇體驗', koreanName: '수영만 요트경기장', mapQuery: '수영만 요트경기장', address: '海雲台區海雲台海邊路84', tags: ['極致浪漫', '海上煙火'], description: '釜山夜晚非常有代表性的行程。', stayTime: '1 小時', queueTime: '提早 20 分鐘報到', highlights: '大橋夜景、海風與煙火是主角。', story: '從海上看城市燈光與橋體，會讓整趟旅程有一個很明顯的高光時刻。', tips: '場地很大，務必提早到。容易暈船的人先吃藥。', icon: 'fa-ship' }
+        ]
+      },
+      {
+        day: 5,
+        tripDate: '2026-05-10',
+        dateLabel: '5/10(日)',
+        title: '收尾日、最後採買與歸途',
+        budget: '約 50,000 KRW',
+        memo: ['機場若遇尖峰班次，退稅與提貨線會很長。', '液體與膠狀伴手禮要放托運。', '最後一天若行李多，直接叫車最省事。'],
+        events: [
+          { time: '09:00 - 10:15', type: 'single', title: '釜田市場 最後採買', koreanName: '부전시장', mapQuery: '부전시장', address: '釜山鎮區中央大路783街23', tags: ['傳統市場', '伴手禮'], description: '最後補買乾貨、海苔與芝麻油。', stayTime: '1.2 小時', queueTime: '無', highlights: '市場感強，價格也較有空間。', story: '相較純觀光區，這裡更像真實生活市場，適合收尾。', tips: '生鮮水果不要買太多，避免帶不走。', icon: 'fa-bag-shopping', transit: { method: '步行或地鐵', duration: '10 分鐘', desc: '回西面吃早午餐', icon: 'fa-shoe-prints' } },
+          { time: '10:15 - 10:45', type: 'choices', title: '早午餐 西面在地朝食', description: '依時間與體力決定要吃市區或機場。', options: [
+            { title: '機張手工刀切麵', koreanName: '기장손칼국수', mapQuery: '기장손칼국수 서면', address: '西面站巷弄', tags: ['人氣老店', '手工揉製'], description: '熱湯麵作為收尾很舒服。', stayTime: '40 分鐘', queueTime: '早上通常不久', highlights: '刀切麵與紫菜包飯很搭。', story: '吃起來有樸實感，作為最後一餐很安定。', tips: '若趕時間，建議一到店就先想好餐點。' },
+            { title: 'Isaac Toast 奶油吐司', koreanName: '이삭토스트 부산서면롯데점', mapQuery: '이삭토스트 부산서면롯데점', address: '西面商圈內', tags: ['國民早餐', '外帶方便'], description: '適合快速外帶。', stayTime: '20 分鐘', queueTime: '約 10 分鐘', highlights: '甜鹹奶油吐司很有韓國早餐辨識度。', story: '想省時間又想有一點儀式感，Isaac 很合適。', tips: '外帶回飯店邊整理行李邊吃也行。' },
+            { title: 'SKY31 機場美食街', koreanName: '김해국제공항 국제선', mapQuery: '김해국제공항 국제선', address: '金海機場國際線 3樓', tags: ['機場美食', '不趕時間'], description: '直接在機場處理最穩。', stayTime: '45 分鐘', queueTime: '視人潮', highlights: '選擇夠用，時間掌握最簡單。', story: '對最後一天來說，減少移動常比多吃一間名店更有價值。', tips: '便利商店也是不錯備案。' }
+          ], icon: 'fa-utensils', transit: { method: '回飯店拿行李後叫車', duration: '約 30 分鐘', desc: '前往機場', icon: 'fa-taxi' } },
+          { time: '11:00 - 13:40', type: 'single', title: '金海機場報到與退稅', koreanName: '김해국제공항', mapQuery: '김해국제공항', address: '金海機場出境大廳', tags: ['準備返台', '退稅注意'], description: '完成退稅、托運與登機流程。', stayTime: '2 到 3 小時', queueTime: '安檢與退稅可能較久', highlights: '先掃退稅單，再辦報到托運，之後領現金或完成退稅流程。', story: '最後一段通常最容易因排隊影響心情，早點到會舒服很多。', tips: '從西面叫車到機場通常最輕鬆。若遇塞車風險，可改地鐵加輕軌。', icon: 'fa-plane-departure' }
+        ]
+      }
+    ];
+
+    const getWeatherIcon = (code) => {
+      if (code === 0) return { icon: 'fa-sun', text: '晴天', color: 'text-amber-500', bg: 'bg-amber-50' };
+      if (code >= 1 && code <= 3) return { icon: 'fa-cloud-sun', text: '多雲', color: 'text-gray-500', bg: 'bg-gray-100' };
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { icon: 'fa-cloud-rain', text: '雨天', color: 'text-blue-500', bg: 'bg-blue-50' };
+      if (code >= 71 && code <= 86) return { icon: 'fa-snowflake', text: '降雪', color: 'text-cyan-500', bg: 'bg-cyan-50' };
+      if (code >= 95) return { icon: 'fa-bolt', text: '雷雨', color: 'text-indigo-500', bg: 'bg-indigo-50' };
+      return { icon: 'fa-cloud', text: '陰天', color: 'text-gray-400', bg: 'bg-gray-50' };
+    };
+
+    const getDayOfWeek = (dateString) => {
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      const d = new Date(dateString);
+      return `${d.getMonth() + 1}/${d.getDate()}(${days[d.getDay()]})`;
+    };
+
+    const ExchangeRateWidget = () => {
+      const [rate, setRate] = useState(null);
+      const [amount, setAmount] = useState(10000);
+      const [isKrwToTwd, setIsKrwToTwd] = useState(true);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        let cancelled = false;
+
+        const fetchRate = async () => {
+          try {
+            const res = await fetch('https://open.er-api.com/v6/latest/TWD');
+            const data = await res.json();
+            const nextRate = Number(data?.rates?.KRW);
+            if (!cancelled) {
+              setRate(Number.isFinite(nextRate) && nextRate > 0 ? nextRate : 42.5);
+              setLoading(false);
+            }
+          } catch (err) {
+            if (!cancelled) {
+              setRate(42.5);
+              setLoading(false);
+            }
+          }
+        };
+
+        fetchRate();
+        return () => {
+          cancelled = true;
+        };
+      }, []);
+
+      const numericAmount = Number(amount) || 0;
+      const outputAmount = rate ? (isKrwToTwd ? numericAmount / rate : numericAmount * rate) : 0;
+      const sourceCurrency = isKrwToTwd ? 'KRW' : 'TWD';
+      const targetCurrency = isKrwToTwd ? 'TWD' : 'KRW';
+
+      const handleToggleDirection = () => {
+        setIsKrwToTwd((prev) => !prev);
+        setAmount(isKrwToTwd ? 1000 : 10000);
+      };
+
+      return (
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-gray-500 font-serif mb-1 tracking-wider">EXCHANGE RATE</p>
+              <h3 className="text-xl font-serif-tc font-bold text-gray-800 tracking-wide">匯率試算</h3>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+              <i className="fa-solid fa-dollar-sign text-[20px]"></i>
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="text-sm text-gray-400">載入匯率中...</p>
+          ) : (
+            <div>
+              <p className="text-xs text-gray-400 mb-3 font-medium">參考匯率 1 TWD 約 {rate?.toFixed(2)} KRW</p>
+              <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg border border-gray-100 relative z-0">
+                <span className="font-semibold text-gray-500 pl-2 w-10 text-sm">{sourceCurrency}</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="bg-transparent w-full text-right outline-none font-bold text-gray-800 text-xl tracking-wide"
+                />
+              </div>
+              <div className="flex justify-center my-[-12px] relative z-10">
+                <button onClick={handleToggleDirection} className="bg-white border border-gray-200 p-1.5 rounded-full shadow-sm text-[#0078D7] hover:bg-gray-50 active:scale-95 transition-all" aria-label="切換匯率方向">
+                  <i className="fa-solid fa-arrows-up-down text-[16px]"></i>
+                </button>
+              </div>
+              <div className="flex items-center justify-between bg-[#E5F1FB] p-3 pt-5 rounded-lg relative z-0 mt-1">
+                <span className="font-bold text-[#0078D7] w-10 text-sm">{targetCurrency}</span>
+                <span className="font-black text-2xl text-[#0078D7] tracking-wide">{rate ? Math.round(outputAmount).toLocaleString() : '---'}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('prep');
+      const [selectedEvent, setSelectedEvent] = useState(null);
+      const [weeklyWeather, setWeeklyWeather] = useState(null);
+
+      useEffect(() => {
+        let cancelled = false;
+
+        const fetchWeather = async () => {
+          try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1028&longitude=129.0403&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=Asia%2FSeoul');
+            const data = await res.json();
+            const daily = data?.daily;
+            if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.temperature_2m_max) || !Array.isArray(daily.temperature_2m_min) || !Array.isArray(daily.weather_code)) {
+              throw new Error('天氣資料格式異常');
+            }
+            const forecast = daily.time.map((time, idx) => ({
+              date: time,
+              max: daily.temperature_2m_max[idx],
+              min: daily.temperature_2m_min[idx],
+              code: daily.weather_code[idx]
+            }));
+            if (!cancelled) {
+              setWeeklyWeather(forecast.slice(0, 7));
+            }
+          } catch (err) {
+            console.error('Weather fetch failed:', err);
+            if (!cancelled) {
+              setWeeklyWeather([]);
+            }
+          }
+        };
+
+        fetchWeather();
+        return () => {
+          cancelled = true;
+        };
+      }, []);
+
+      useEffect(() => {
+        document.body.style.overflow = selectedEvent ? 'hidden' : '';
+        return () => {
+          document.body.style.overflow = '';
+        };
+      }, [selectedEvent]);
+
+      const tripWeatherMap = useMemo(() => {
+        const map = {};
+        (weeklyWeather || []).forEach((item) => {
+          map[item.date] = item;
+        });
+        return map;
+      }, [weeklyWeather]);
+
+      const renderCardDetails = (item, isSubOption = false, keyIdx = 0) => (
+        <div
+          key={keyIdx}
+          onClick={() => setSelectedEvent(item)}
+          className={`group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm transition-all cursor-pointer relative overflow-hidden active:scale-[0.995] ${isSubOption ? 'ml-6 mt-3' : ''}`}
+        >
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#E5F1FB]"></div>
+          <div className="flex justify-between items-start pl-2">
+            <div className="flex-1 pr-4">
+              {!isSubOption && item.time && (
+                <div className="flex items-center text-xs text-gray-400 font-mono mb-2 font-medium">
+                  <i className="fa-solid fa-clock mr-1.5 text-[12px]"></i>
+                  {item.time}
+                </div>
+              )}
+              {isSubOption && <div className="text-[10px] font-bold text-gray-400 uppercase mb-1">OPTION</div>}
+              <h3 className={`${isSubOption ? 'text-md' : 'text-lg'} font-serif-tc font-bold text-gray-800 mb-1 leading-snug`}>{item.title}</h3>
+              <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {item.tags && item.tags.map((tag, i) => (
+                  <span key={`${tag}-${i}`} className="px-2.5 py-1 text-[10px] font-bold text-[#0078D7] border border-[#0078D7]/30 rounded-full bg-blue-50/50">{tag}</span>
+                ))}
+              </div>
+            </div>
+            {!isSubOption && item.icon && (
+              <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#0078D7] shrink-0">
+                <i className={`fa-solid ${item.icon} text-[18px]`}></i>
+              </div>
+            )}
+            {isSubOption && (
+              <div className="w-8 h-8 rounded-full bg-[#E5F1FB] flex items-center justify-center text-[#0078D7] shrink-0">
+                <i className="fa-solid fa-chevron-right text-[14px]"></i>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="min-h-screen bg-[#FAFAFA] font-sans selection:bg-[#E5F1FB] relative max-w-md mx-auto shadow-2xl border-x border-gray-100 overflow-x-hidden">
+          <div className="sticky top-0 bg-[#FAFAFA]/95 backdrop-blur-md z-10 border-b border-gray-200">
+            <div className="flex overflow-x-auto no-scrollbar px-4 py-3 space-x-5 items-center">
+              <span className="font-serif font-black text-xl tracking-tighter text-[#0078D7] pr-1">BUSAN</span>
+              <button onClick={() => setActiveTab('prep')} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === 'prep' ? 'text-[#0078D7]' : 'text-gray-400'}`}>行前準備{activeTab === 'prep' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full"></span>}</button>
+              {itineraryData.map((day) => (
+                <button key={`btn-${day.day}`} onClick={() => setActiveTab(`day${day.day}`)} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === `day${day.day}` ? 'text-[#0078D7]' : 'text-gray-400'}`}>
+                  {day.dateLabel}
+                  {activeTab === `day${day.day}` && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full"></span>}
+                </button>
+              ))}
+              <button onClick={() => setActiveTab('tools')} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === 'tools' ? 'text-[#0078D7]' : 'text-gray-400'}`}>工具{activeTab === 'tools' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full"></span>}</button>
+            </div>
+          </div>
+
+          <main className="min-h-[85vh]">
+            {activeTab === 'prep' && (
+              <div className="pb-24 animate-fade-in">
+                <div className="pt-6 pb-4 px-5">
+                  <p className="text-[#0078D7] font-serif tracking-widest text-sm mb-2 font-semibold uppercase">Preparation</p>
+                  <h1 className="text-3xl leading-tight font-serif-tc font-bold">行前準備指南</h1>
+                </div>
+
+                <div className="px-5 space-y-6">
+                  <section>
+                    <h2 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center mb-3"><i className="fa-solid fa-square-check mr-2 text-[#0078D7] text-[18px]"></i>行前核對清單</h2>
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-4">
+                      {prepData.checklist.map((item, idx) => (
+                        <div key={idx} className="flex gap-3">
+                          <div className="mt-1 flex-shrink-0 text-[#0078D7]"><i className="fa-solid fa-circle-check text-[16px]"></i></div>
+                          <div>
+                            <h4 className="font-bold text-gray-800 text-sm mb-1">{item.title}</h4>
+                            <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center mb-3"><i className="fa-solid fa-mobile-screen mr-2 text-[#0078D7] text-[18px]"></i>必備 App 下載</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                      {prepData.apps.map((app, idx) => (
+                        <div key={idx} className="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+                          <h4 className="font-bold text-[#0078D7] text-sm mb-1">{app.name}</h4>
+                          <p className="text-[11px] text-gray-500 leading-snug">{app.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center mb-3"><i className="fa-solid fa-credit-card mr-2 text-[#0078D7] text-[18px]"></i>網卡與支付</h2>
+                    <div className="bg-[#FAFAFA] rounded-xl border-l-4 border-[#0078D7] p-4 shadow-sm space-y-3">
+                      {prepData.payment.map((item, idx) => (
+                        <div key={idx}>
+                          <h4 className="font-bold text-gray-800 text-sm mb-0.5">{item.title}</h4>
+                          <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center mb-3"><i className="fa-solid fa-house mr-2 text-[#0078D7] text-[18px]"></i>住宿區域推薦</h2>
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                      <div className="bg-[#E5F1FB] p-4">
+                        <span className="text-[10px] font-bold text-[#0078D7] uppercase tracking-wider block mb-1">本次行程推薦首選</span>
+                        <h3 className="font-serif-tc font-bold text-lg text-gray-900">{prepData.accommodation.recommended}</h3>
+                        <p className="text-xs text-gray-600 mt-2 leading-relaxed">{prepData.accommodation.reason}</p>
+                      </div>
+                      <div className="p-4 space-y-3 bg-gray-50">
+                        <p className="text-xs font-bold text-gray-400 mb-2">其他區域比較</p>
+                        {prepData.accommodation.comparisons.map((comp, idx) => (
+                          <div key={idx} className="flex justify-between items-center bg-white p-2 rounded-lg border border-gray-100">
+                            <span className="font-bold text-sm w-16">{comp.area}</span>
+                            <div className="flex flex-col flex-1 pl-2">
+                              <span className="text-[11px] text-green-600 flex items-center"><i className="fa-solid fa-circle-check mr-1 text-[10px]"></i>{comp.pro}</span>
+                              <span className="text-[11px] text-red-500 flex items-center"><i className="fa-solid fa-xmark mr-1 text-[10px]"></i>{comp.con}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center mb-3"><i className="fa-solid fa-suitcase mr-2 text-[#0078D7] text-[18px]"></i>天氣與行李打包</h2>
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-4">
+                      {prepData.weather.map((item, idx) => (
+                        <div key={idx}>
+                          <h4 className="font-bold text-gray-800 text-sm mb-1">{item.title}</h4>
+                          <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </div>
+            )}
+
+            {activeTab.startsWith('day') && (() => {
+              const dayData = itineraryData.find((d) => `day${d.day}` === activeTab);
+              const matchedWeather = tripWeatherMap[dayData.tripDate] || null;
+              const weatherUI = matchedWeather ? getWeatherIcon(matchedWeather.code) : null;
+
+              return (
+                <div className="pb-24 animate-fade-in">
+                  <div className="pt-6 pb-4 px-5">
+                    <div className="flex justify-between items-start mb-2 gap-3">
+                      <p className="text-[#0078D7] font-serif tracking-widest text-sm font-semibold">DAY {dayData.day}</p>
+                      <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <div className="flex items-center px-2.5 py-1 rounded-full bg-gray-100 border border-white shadow-sm">
+                          <i className="fa-solid fa-wallet text-gray-500 mr-1.5 text-[13px]"></i>
+                          <span className="text-xs font-bold text-gray-700">{dayData.budget}</span>
+                        </div>
+                        {weatherUI && (
+                          <div className={`flex items-center px-2.5 py-1 rounded-full ${weatherUI.bg} border border-white shadow-sm`}>
+                            <i className={`fa-solid ${weatherUI.icon} ${weatherUI.color} mr-1.5 text-[14px]`}></i>
+                            <span className="text-xs font-bold text-gray-700">{Math.round(matchedWeather.min)}° - {Math.round(matchedWeather.max)}°</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <h1 className="text-3xl leading-tight font-serif-tc font-bold">{dayData.title}</h1>
+                    {!matchedWeather && (
+                      <p className="text-xs text-gray-400 mt-2">即時預報僅顯示未來 7 天，因此此日期未套用即時天氣。</p>
+                    )}
+                  </div>
+
+                  <div className="mx-5 mb-8 bg-[#FAFAFA] border-l-4 border-[#0078D7] p-4 rounded-r-xl shadow-sm">
+                    <div className="flex items-center text-[#0078D7] mb-2 font-bold">
+                      <i className="fa-solid fa-triangle-exclamation mr-2 text-[16px]"></i>
+                      <span className="ml-1">今日備忘錄</span>
+                    </div>
+                    <ul className="space-y-2">
+                      {dayData.memo.map((item, idx) => (
+                        <li key={idx} className="text-sm text-gray-600 flex items-start">
+                          <span className="mr-2 text-[#0078D7]">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="px-5">
+                    {dayData.events.map((evt, idx) => (
+                      <div key={`evt-${idx}`} className="relative mb-2">
+                        {evt.type === 'single' ? (
+                          renderCardDetails(evt, false, `s-${idx}`)
+                        ) : (
+                          <div className="bg-gray-50 rounded-2xl p-4 border border-dashed border-gray-200">
+                            <div className="flex items-center text-xs text-gray-400 font-mono mb-2 font-medium">
+                              <i className="fa-solid fa-clock mr-1.5 text-[12px]"></i>
+                              {evt.time}
+                            </div>
+                            <h3 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center">
+                              <i className="fa-solid fa-utensils mr-2 text-[#0078D7] text-[16px]"></i>
+                              {evt.title}
+                              <span className="ml-2 text-xs font-sans font-normal text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">{evt.options.length} 個選項</span>
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1 mb-2">{evt.description}</p>
+                            <div className="space-y-3 relative before:absolute before:inset-y-0 before:left-3 before:w-0.5 before:bg-gray-200">
+                              {evt.options.map((opt, optIdx) => renderCardDetails({ ...opt, time: null }, true, `opt-${optIdx}`))}
+                            </div>
+                          </div>
+                        )}
+
+                        {evt.transit && idx !== dayData.events.length - 1 && (
+                          <div className="flex flex-col items-center py-2">
+                            <div className="w-0.5 h-6 bg-gradient-to-b from-gray-200 to-transparent"></div>
+                            <div className="z-10 flex items-center space-x-2 bg-white px-3 py-1.5 rounded-full border border-[#E5F1FB] shadow-sm text-xs text-[#0078D7] font-medium my-[-4px]">
+                              <i className={`fa-solid ${evt.transit.icon} text-[14px]`}></i>
+                              <span>{evt.transit.method} • <span className="text-gray-500">{evt.transit.duration}</span></span>
+                            </div>
+                            <div className="w-0.5 h-6 bg-gradient-to-t from-gray-200 to-transparent"></div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {activeTab === 'tools' && (
+              <div className="p-5 animate-fade-in pb-24">
+                <div className="pt-2 pb-6">
+                  <p className="text-[#0078D7] font-serif tracking-widest text-sm mb-2 font-semibold uppercase">Utilities</p>
+                  <h1 className="text-3xl leading-tight font-serif-tc font-bold">實用工具</h1>
+                </div>
+
+                <div className="bg-white rounded-xl p-5 mb-4 border border-gray-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-sm text-gray-500 font-serif mb-1 tracking-wider">7-DAY FORECAST</p>
+                      <h3 className="text-xl font-serif-tc font-bold text-gray-800 tracking-wide">釜山一週天氣</h3>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                      <i className="fa-solid fa-cloud-rain text-[20px]"></i>
+                    </div>
+                  </div>
+
+                  {weeklyWeather === null ? (
+                    <p className="text-sm text-gray-400">天氣資料連線中...</p>
+                  ) : weeklyWeather.length === 0 ? (
+                    <p className="text-sm text-gray-400">目前抓不到天氣資料，稍後重整再試。</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {weeklyWeather.map((day, idx) => {
+                        const wUI = getWeatherIcon(day.code);
+                        return (
+                          <div key={idx} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg border-b border-gray-50 last:border-0">
+                            <span className="w-16 text-sm font-bold text-gray-700">{idx === 0 ? '今天' : getDayOfWeek(day.date)}</span>
+                            <div className={`flex items-center w-20 px-2 py-1 rounded text-xs font-bold ${wUI.bg} ${wUI.color}`}>
+                              <i className={`fa-solid ${wUI.icon} text-[14px]`}></i>
+                              <span className="ml-1.5">{wUI.text}</span>
+                            </div>
+                            <div className="w-20 text-right text-sm font-medium text-gray-600">{Math.round(day.min)}° <span className="text-gray-300 mx-1">/</span> {Math.round(day.max)}°</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <ExchangeRateWidget />
+
+                <div className="mt-8 bg-gray-900 rounded-xl p-5 text-white shadow-lg">
+                  <h3 className="font-serif-tc font-bold text-lg mb-2 flex items-center">
+                    <i className="fa-solid fa-circle-info mr-2 text-indigo-300 text-[18px]"></i>
+                    旅行提示
+                  </h3>
+                  <p className="text-sm text-gray-300 leading-relaxed mb-3">韓國的 Google Maps 步行導航常不完整，建議以 Naver Map 為主。</p>
+                  <p className="text-sm text-gray-300 leading-relaxed">語言協助建議用 Papago，圖片與語音翻譯通常更順手。</p>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {selectedEvent && (
+            <>
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity" onClick={() => setSelectedEvent(null)}></div>
+              <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col h-[90vh] animate-slide-up">
+                <div className="flex justify-between items-start p-5 pb-3 shrink-0 border-b border-gray-100">
+                  <div className="pr-4">
+                    <div className="flex items-center space-x-2 mb-2 flex-wrap">
+                      {selectedEvent.time && <span className="text-xs font-bold text-[#0078D7] bg-[#E5F1FB] px-2 py-1 rounded">{selectedEvent.time}</span>}
+                      {selectedEvent.tags && selectedEvent.tags.slice(0, 1).map((t, i) => (
+                        <span key={`t-${i}`} className="text-[10px] font-bold text-gray-500 border border-gray-200 px-2 py-1 rounded-full">{t}</span>
+                      ))}
+                    </div>
+                    <h2 className="text-2xl font-serif-tc font-bold text-gray-900 leading-snug">{selectedEvent.title}</h2>
+                    <p className="text-sm text-gray-500 font-medium mt-1 select-all">{selectedEvent.koreanName || ''}</p>
+                  </div>
+                  <button onClick={() => setSelectedEvent(null)} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 shrink-0 flex items-center justify-center w-10 h-10" aria-label="關閉詳情">
+                    <i className="fa-solid fa-xmark text-[20px]"></i>
+                  </button>
+                </div>
+
+                <div className="p-5 overflow-y-auto pb-28 custom-scrollbar flex-1 safe-bottom">
+                  <div className="space-y-6">
+                    <div className="flex gap-3">
+                      {selectedEvent.stayTime && (
+                        <div className="flex-1 bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                          <i className="fa-regular fa-hourglass-half text-[#0078D7] text-[16px] mb-1"></i>
+                          <span className="text-[10px] text-gray-400 font-bold mb-0.5">建議停留</span>
+                          <span className="text-xs font-bold text-gray-700">{selectedEvent.stayTime}</span>
+                        </div>
+                      )}
+                      {selectedEvent.queueTime && (
+                        <div className="flex-1 bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                          <i className="fa-solid fa-people-line text-orange-500 text-[16px] mb-1"></i>
+                          <span className="text-[10px] text-gray-400 font-bold mb-0.5">排隊狀況</span>
+                          <span className="text-xs font-bold text-gray-700">{selectedEvent.queueTime}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedEvent.highlights && (
+                      <div className="bg-[#E5F1FB]/50 border-l-4 border-[#0078D7] p-3 rounded-r-xl">
+                        <h4 className="text-xs font-serif-tc font-bold text-[#0078D7] tracking-wider mb-1 flex items-center"><i className="fa-solid fa-star mr-1.5"></i>最佳看點 / 必點招牌</h4>
+                        <p className="text-gray-700 text-sm font-medium leading-relaxed">{selectedEvent.highlights}</p>
+                      </div>
+                    )}
+
+                    <div>
+                      <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-book-open mr-1.5 text-[14px]"></i>深度介紹</h4>
+                      <p className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-line">{selectedEvent.story || selectedEvent.description || '暫無補充介紹。'}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-lightbulb mr-1.5 text-[14px] text-amber-500"></i>實用攻略與提醒</h4>
+                      <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                        <p className="text-amber-800 font-medium leading-relaxed text-[14px] whitespace-pre-line">{selectedEvent.tips || '暫無補充提醒。'}</p>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-5">
+                      <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-map-pin mr-1.5"></i>詳細地址</h4>
+                      <p className="text-gray-600 text-sm select-all bg-gray-50 p-3 rounded-lg">{selectedEvent.address || '未提供地址'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-6 left-5 right-5 z-50">
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedEvent.mapQuery || selectedEvent.koreanName || selectedEvent.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#0078D7] text-white py-4 rounded-2xl font-bold font-serif-tc shadow-lg shadow-[#0078D7]/30 flex items-center justify-center tracking-widest text-[15px]"
+                  >
+                    <i className="fa-solid fa-location-arrow mr-2 text-[18px]"></i>
+                    一鍵導航 Google Map
+                  </a>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    const rootEl = document.getElementById('root');
+    if (!rootEl) {
+      throw new Error('找不到 root 容器');
+    }
+
+    if (ReactDOM.createRoot) {
+      ReactDOM.createRoot(rootEl).render(
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      );
+    } else {
+      ReactDOM.render(
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>,
+        rootEl
+      );
+    }
+  </script>
+</body>
+</html>
