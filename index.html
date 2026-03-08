@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>釜山 5天4夜 深度攻略</title>
 
+  <!-- 1. 引入 Tailwind CSS (負責排版) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
+  <!-- 2. 引入 FontAwesome (最穩定的圖示庫) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- 3. 引入 React 核心函式庫與 Babel (使用最穩定的 cdnjs) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"></script>
+  
+  <!-- 引入思源宋體與自訂 CSS -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
     .font-serif-tc { font-family: 'Noto Serif TC', "PMingLiU", "Songti TC", serif; }
@@ -28,11 +32,31 @@
   </style>
 </head>
 <body>
+  <!-- App 渲染容器 -->
   <div id="root"></div>
 
-  <script type="text/babel">
+  <!-- React 程式碼 (設定 presets 確保所有手機都能讀懂) -->
+  <script type="text/babel" data-presets="react,env">
     const { useState, useEffect } = React;
 
+    // --- 🚨 加入錯誤捕捉器 (避免白畫面，若有錯會顯示紅字) ---
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+      render() {
+        if (this.state.hasError) {
+          return <div style={{padding: '20px', color: 'red', fontWeight: 'bold'}}>程式執行錯誤：{this.state.error.message}<br/>請檢查資料格式或重新整理。</div>;
+        }
+        return this.props.children; 
+      }
+    }
+
+    // --- 📝 Data: 行前準備資料 ---
     const prepData = {
       checklist: [
         { title: "護照與簽證 (K-ETA)", desc: "確認護照效期6個月以上。持台灣護照入境免簽，但請務必確認最新 K-ETA 規定並提前填寫入境卡或 Q-Code 加速通關。" },
@@ -55,7 +79,7 @@
       ]
     };
 
-    // --- 擴充版行程庫 ---
+    // --- 📝 Data: 釜山行程資料庫 (包含精確的 mapQuery) ---
     const itineraryData = [
       {
         day: 1, dateLabel: "5/6(三)", title: "抵達日、輕鬆適應日", budget: "約 47,500 KRW",
@@ -330,7 +354,7 @@
               tips: "適合不想大排長龍，想找個舒服地方坐著看海休息的旅客。" 
             } 
           ], icon: "fa-utensils", transit: { method: "步行", duration: "10-15 分鐘", desc: "沿海灘漫步", icon: "fa-shoe-prints" } },
-          { time: "14:00 - 16:30", type: "single", title: "Millac the Market", koreanName: "밀락더마켓", mapQuery: "밀락더마켓", address: "水營區民樂水边路17街56", tags: ["潮流複合", "避寒避暑"], 
+          { time: "14:00 - 16:30", type: "single", title: "Millac the Market", koreanName: "밀락더마켓", mapQuery: "밀락더마켓", address: "水營區民樂水邊路17街56", tags: ["潮流複合", "避寒避暑"], 
             description: "擁有廣安大橋海景階梯的潮流文創地標。", 
             stayTime: "1.5 小時", queueTime: "無",
             highlights: "挑高海景階梯座位區、文創小物店、星巴克與各式甜點。",
@@ -415,7 +439,7 @@
             description: "辦理退稅、托運、登機，帶著滿滿回憶返台。", 
             stayTime: "2-3 小時", queueTime: "安檢與退稅排隊較長",
             highlights: "自助退稅機台掃單、領取免稅品、登機。",
-            story: "從西面搭乘計程車前往機場車資約 18,000 - 22,000 韓元，能省去在地鐵站扛行李上下的痛苦，強烈推薦。若遇大雨易塞車，請立刻放棄計程車，改搭地鐵轉輕軌。", 
+            story: "從西面搭乘計程車前往機場車資約 18,000 - 22,000 韓元，能省去在地鐵站扛行李上下的痛苦，強烈推薦。若遇大雨易塞車，請改搭「西面(地鐵) ➜ 沙上(轉輕軌) ➜ 機場」。", 
             tips: "【退稅流程】抵達機場後 ➜ 先去自助機台(Kiosk)掃描退稅單護照 ➜ 航空公司櫃檯報到托運 ➜ 安檢通關 ➜ 到候機室的退稅櫃台領取現金。13:40 班機起飛返回台北。",
             icon: "fa-plane-departure" 
           }
@@ -517,8 +541,8 @@
         fetchWeather();
       }, []);
 
-      const renderCardDetails = (item, isSubOption = false) => (
-        <div onClick={() => setSelectedEvent(item)} className={`group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm transition-all cursor-pointer relative overflow-hidden ${isSubOption ? 'ml-6 mt-3' : ''}`}>
+      const renderCardDetails = (item, isSubOption = false, keyIdx = 0) => (
+        <div key={keyIdx} onClick={() => setSelectedEvent(item)} className={`group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm transition-all cursor-pointer relative overflow-hidden ${isSubOption ? 'ml-6 mt-3' : ''}`}>
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#E5F1FB] transition-colors" />
           <div className="flex justify-between items-start pl-2">
             <div className="flex-1 pr-4">
@@ -527,7 +551,7 @@
               <h3 className={`${isSubOption ? 'text-md' : 'text-lg'} font-serif-tc font-bold text-gray-800 mb-1 leading-snug`}>{item.title}</h3>
               <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
               <div className="flex flex-wrap gap-2 mt-3">
-                {item.tags?.map((tag, i) => <span key={i} className="px-2.5 py-1 text-[10px] font-bold text-[#0078D7] border border-[#0078D7]/30 rounded-full bg-blue-50/50">{tag}</span>)}
+                {item.tags && item.tags.map((tag, i) => <span key={tag + i} className="px-2.5 py-1 text-[10px] font-bold text-[#0078D7] border border-[#0078D7]/30 rounded-full bg-blue-50/50">{tag}</span>)}
               </div>
             </div>
             {!isSubOption && item.icon && <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#0078D7] shrink-0"><i className={`fa-solid ${item.icon} text-[18px]`}></i></div>}
@@ -543,7 +567,7 @@
             <div className="flex overflow-x-auto no-scrollbar px-4 py-3 space-x-5 items-center">
               <span className="font-serif font-black text-xl tracking-tighter text-[#0078D7] pr-1">BUSAN</span>
               <button onClick={() => setActiveTab('prep')} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === 'prep' ? 'text-[#0078D7]' : 'text-gray-400'}`}>行前準備{activeTab === 'prep' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full" />}</button>
-              {itineraryData.map(day => <button key={day.day} onClick={() => setActiveTab(`day${day.day}`)} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === `day${day.day}` ? 'text-[#0078D7]' : 'text-gray-400'}`}>{day.dateLabel}{activeTab === `day${day.day}` && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full" />}</button>)}
+              {itineraryData.map(day => <button key={`btn-${day.day}`} onClick={() => setActiveTab(`day${day.day}`)} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === `day${day.day}` ? 'text-[#0078D7]' : 'text-gray-400'}`}>{day.dateLabel}{activeTab === `day${day.day}` && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full" />}</button>)}
               <button onClick={() => setActiveTab('tools')} className={`whitespace-nowrap font-serif-tc font-bold text-sm transition-colors relative pb-1 ${activeTab === 'tools' ? 'text-[#0078D7]' : 'text-gray-400'}`}>工具{activeTab === 'tools' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0078D7] rounded-full" />}</button>
             </div>
           </div>
@@ -622,19 +646,19 @@
                     <h1 className="text-3xl leading-tight font-serif-tc font-bold">{dayData.title}</h1>
                   </div>
                   <div className="mx-5 mb-8 bg-[#FAFAFA] border-l-4 border-[#0078D7] p-4 rounded-r-xl shadow-sm">
-                    <div className="flex items-center text-[#0078D7] mb-2 font-bold"><i className="fa-solid fa-triangle-exclamation mr-2 text-[16px]"></i><span>今日備忘錄 Memo</span></div>
+                    <div className="flex items-center text-[#0078D7] mb-2 font-bold"><i className="fa-solid fa-triangle-exclamation mr-2 text-[16px]"></i><span className="ml-1">今日備忘錄 Memo</span></div>
                     <ul className="space-y-2">{dayData.memo.map((item, idx) => (<li key={idx} className="text-sm text-gray-600 flex items-start"><span className="mr-2 text-[#0078D7]">•</span><span>{item}</span></li>))}</ul>
                   </div>
                   <div className="px-5">
                     {dayData.events.map((evt, idx) => (
-                      <div key={idx} className="relative mb-2">
-                        {evt.type === 'single' ? renderCardDetails(evt) : (
+                      <div key={`evt-${idx}`} className="relative mb-2">
+                        {evt.type === 'single' ? renderCardDetails(evt, false, `s-${idx}`) : (
                           <div className="bg-gray-50 rounded-2xl p-4 border border-dashed border-gray-200">
                              <div className="flex items-center text-xs text-gray-400 font-mono mb-2 font-medium"><i className="fa-solid fa-clock mr-1.5 text-[12px]"></i>{evt.time}</div>
                              <h3 className="text-lg font-serif-tc font-bold text-gray-800 flex items-center"><i className="fa-solid fa-utensils mr-2 text-[#0078D7] text-[16px]"></i>{evt.title} <span className="ml-2 text-xs font-sans font-normal text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">{evt.options.length} 個選項</span></h3>
                              <p className="text-sm text-gray-500 mt-1 mb-2">{evt.description}</p>
                              <div className="space-y-3 relative before:absolute before:inset-y-0 before:left-3 before:w-0.5 before:bg-gray-200">
-                               {evt.options.map(opt => renderCardDetails({...opt, time: null}, true))}
+                               {evt.options.map((opt, optIdx) => renderCardDetails({...opt, time: null}, true, `opt-${optIdx}`))}
                              </div>
                           </div>
                         )}
@@ -686,7 +710,7 @@
             )}
           </main>
 
-          {/* 🚀 擴充版 Modal：展現深度資訊 */}
+          {/* Modal */}
           {selectedEvent && (
             <>
               <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 max-w-md mx-auto transition-opacity" onClick={() => setSelectedEvent(null)} />
@@ -696,7 +720,7 @@
                    <div className="pr-4">
                      <div className="flex items-center space-x-2 mb-2">
                        {selectedEvent.time && <span className="text-xs font-bold text-[#0078D7] bg-[#E5F1FB] px-2 py-1 rounded">{selectedEvent.time}</span>}
-                       {selectedEvent.tags?.slice(0,1).map(t => <span key={t} className="text-[10px] font-bold text-gray-500 border border-gray-200 px-2 py-1 rounded-full">{t}</span>)}
+                       {selectedEvent.tags && selectedEvent.tags.slice(0,1).map((t, i) => <span key={`t-${i}`} className="text-[10px] font-bold text-gray-500 border border-gray-200 px-2 py-1 rounded-full">{t}</span>)}
                      </div>
                      <h2 className="text-2xl font-serif-tc font-bold text-gray-900 leading-snug">{selectedEvent.title}</h2>
                      <p className="text-sm text-gray-500 font-medium mt-1 select-all">{selectedEvent.koreanName}</p>
@@ -707,7 +731,6 @@
                 <div className="p-5 overflow-y-auto pb-28 custom-scrollbar flex-1">
                    <div className="space-y-6">
                      
-                     {/* Quick Stats Row */}
                      <div className="flex gap-3">
                        {selectedEvent.stayTime && (
                          <div className="flex-1 bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
@@ -725,7 +748,6 @@
                        )}
                      </div>
 
-                     {/* Highlights */}
                      {selectedEvent.highlights && (
                        <div className="bg-[#E5F1FB]/50 border-l-4 border-[#0078D7] p-3 rounded-r-xl">
                          <h4 className="text-xs font-serif-tc font-bold text-[#0078D7] tracking-wider mb-1 flex items-center"><i className="fa-solid fa-star mr-1.5"></i>最佳看點 / 必點招牌</h4>
@@ -733,13 +755,11 @@
                        </div>
                      )}
 
-                     {/* Story / Intro */}
                      <div>
                        <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-book-open mr-1.5 text-[14px]"></i>深度介紹</h4>
                        <p className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-line">{selectedEvent.story}</p>
                      </div>
 
-                     {/* Tips & Backup */}
                      <div>
                        <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-lightbulb mr-1.5 text-[14px] text-amber-500"></i>實用攻略與提醒</h4>
                        <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
@@ -747,7 +767,6 @@
                        </div>
                      </div>
 
-                     {/* Address */}
                      <div className="border-t border-gray-100 pt-5">
                        <h4 className="text-xs font-serif-tc font-bold text-gray-400 tracking-wider mb-2 flex items-center"><i className="fa-solid fa-map-pin mr-1.5"></i>詳細地址</h4>
                        <p className="text-gray-600 text-sm select-all bg-gray-50 p-3 rounded-lg">{selectedEvent.address}</p>
@@ -768,7 +787,8 @@
     }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    // 使用 ErrorBoundary 包住 App
+    root.render(<ErrorBoundary><App /></ErrorBoundary>);
   </script>
 </body>
 </html>
